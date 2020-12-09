@@ -16,6 +16,9 @@ using TbspRpgLib.Jwt;
 using TbspRpgLib.Settings;
 using TbspRpgLib.Events;
 
+using MapApi.Repositories;
+using MapApi.Services;
+
 namespace MapApi
 {
     public class Startup
@@ -33,6 +36,9 @@ namespace MapApi
             services.AddControllers();
             //services.AddScoped<IEventAdapter, EventAdapter>();
             services.AddScoped<IEventService, EventService>();
+
+            services.AddScoped<ILocationRepository, LocationRepository>();
+            services.AddScoped<ILocationService, LocationService>();
 
             services.Configure<DatabaseSettings>(Configuration.GetSection("Database"));
             services.AddSingleton<IDatabaseSettings>(sp =>

@@ -8,15 +8,15 @@ using TbspRpgLib.Settings;
 using MapApi.Entities;
 
 namespace MapApi.Repositories {
-    interface IMapRepository {
+    public interface ILocationRepository {
         Task<List<Location>> GetAllLocations();
         Task<Location> GetLocationForGame(string gameId);
     }
 
-    public class MapRepository : MongoRepository, IMapRepository {
+    public class LocationRepository : MongoRepository, ILocationRepository {
         private IMongoCollection<Location> _locations;
 
-        public MapRepository(IDatabaseSettings databaseSettings) : base(databaseSettings) {
+        public LocationRepository(IDatabaseSettings databaseSettings) : base(databaseSettings) {
             _locations = _mongoDatabase.GetCollection<Location>("locations");
         }
 
