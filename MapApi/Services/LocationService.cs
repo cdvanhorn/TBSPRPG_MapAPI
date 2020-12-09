@@ -5,7 +5,7 @@ using MapApi.Entities;
 using MapApi.Repositories;
 
 namespace MapApi.Services {
-    interface ILocationService {
+    public interface ILocationService {
         Task<List<Location>> GetAllLocations();
 
         Task<Location> GetLocationForGame(string gameId);
