@@ -18,6 +18,8 @@ using TbspRpgLib.Events;
 
 using MapApi.Repositories;
 using MapApi.Services;
+using MapApi.Adapters;
+using MapApi.EventProcessors;
 
 namespace MapApi
 {
@@ -34,6 +36,7 @@ namespace MapApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddScoped<IGameAggregateAdapter, GameAggregateAdapter>();
             //services.AddScoped<IEventAdapter, EventAdapter>();
             services.AddScoped<IEventService, EventService>();
 
@@ -53,7 +56,7 @@ namespace MapApi
                 sp.GetRequiredService<IOptions<EventStoreSettings>>().Value);
 
             //start workers
-            //services.AddHostedService<MyNewGameEventProcessor>();
+            services.AddHostedService<NewGame>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
