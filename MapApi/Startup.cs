@@ -42,6 +42,8 @@ namespace MapApi
 
             services.AddScoped<ILocationRepository, LocationRepository>();
             services.AddScoped<ILocationService, LocationService>();
+            services.AddScoped<IGameRepository, GameRepository>();
+            services.AddScoped<IGameService, GameService>();
 
             services.Configure<DatabaseSettings>(Configuration.GetSection("Database"));
             services.AddSingleton<IDatabaseSettings>(sp =>

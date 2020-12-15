@@ -8,10 +8,6 @@ namespace MapApi.Entities {
         public string Id { get; set; }
 
         [BsonRepresentation(BsonType.ObjectId)]
-        [BsonElement("game_id")]
-        public string GameId { get; set; }
-
-        [BsonRepresentation(BsonType.ObjectId)]
         [BsonElement("adventure_id")]
         public string AdventureId { get; set; }
 
