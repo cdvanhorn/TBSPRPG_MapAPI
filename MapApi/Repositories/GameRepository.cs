@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MongoDB.Driver;
 
 using TbspRpgLib.Settings;
+using TbspRpgLib.Repositories;
 
 using MapApi.Entities;
 
