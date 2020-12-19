@@ -3,6 +3,7 @@ using System;
 using TbspRpgLib.EventProcessors;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Settings;
+using TbspRpgLib.Services;
 
 using MapApi.Adapters;
 using MapApi.Entities;
@@ -40,6 +41,10 @@ namespace MapApi.EventProcessors
             if(game.UserId == null || game.AdventureId == null || game.UserId == game.AdventureId)
                  return;
             _gameService.InsertGameIfItDoesntExist(game);
+
+            //get the initial location
+            var adventureUrl = _serviceService.GetUrlForService(ServiceService.ADVENTURE_SERVICE_NAME);
+            Console.WriteLine(adventureUrl);
 
             // //update the event index, if this fails it's not a big deal
             // //we'll end up reading duplicates

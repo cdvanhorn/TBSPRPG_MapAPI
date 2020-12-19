@@ -12,9 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-using TbspRpgLib.Jwt;
-using TbspRpgLib.Settings;
-using TbspRpgLib.Events;
+using TbspRpgLib;
 
 using MapApi.Repositories;
 using MapApi.Services;
@@ -36,26 +34,14 @@ namespace MapApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            LibStartup.ConfigureTbspRpgServices(Configuration, services);
+
             services.AddScoped<IGameAggregateAdapter, GameAggregateAdapter>();
             //services.AddScoped<IEventAdapter, EventAdapter>();
-            services.AddScoped<IEventService, EventService>();
-
             services.AddScoped<ILocationRepository, LocationRepository>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IGameRepository, GameRepository>();
             services.AddScoped<IGameService, GameService>();
-
-            services.Configure<DatabaseSettings>(Configuration.GetSection("Database"));
-            services.AddSingleton<IDatabaseSettings>(sp =>
-                sp.GetRequiredService<IOptions<DatabaseSettings>>().Value);
-                
-            services.Configure<JwtSettings>(Configuration.GetSection("JwtSettings"));
-            services.AddSingleton<IJwtSettings>(sp =>
-                sp.GetRequiredService<IOptions<JwtSettings>>().Value);
-            
-            services.Configure<EventStoreSettings>(Configuration.GetSection("EventStore"));
-            services.AddSingleton<IEventStoreSettings>(sp =>
-                sp.GetRequiredService<IOptions<EventStoreSettings>>().Value);
 
             //start workers
             services.AddHostedService<NewGame>();
@@ -73,7 +59,7 @@ namespace MapApi
 
             app.UseRouting();
 
-            app.UseMiddleware<JwtMiddleware>();
+            LibStartup.ConfigureTbspRpg(app);
 
             //app.UseAuthorization();
 
