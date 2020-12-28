@@ -1,9 +1,12 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine
 
+WORKDIR /Packages
+COPY ./Packages/*.nupkg /Packages/
+
 WORKDIR /app
 
 #copy the code in
-COPY . /app
+COPY ./MapApi /app
 
 #build the site
 RUN dotnet restore
