@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using TbspRpgLib.EventProcessors;
 using TbspRpgLib.Aggregates;
@@ -13,6 +14,7 @@ using MapApi.Repositories;
 namespace MapApi.EventProcessors
 {
     public class NewGameHandler {
+        private readonly int IDS_TO_COMPARE = 3;
         private IGameService _gameService;
         private IServiceService _serviceService;
 
@@ -23,9 +25,15 @@ namespace MapApi.EventProcessors
 
         public async void HandleNewGameEvent(Game game) {
             //this will be our business logic, so we can do some testing
-            // //if the game is missing fields ignore it
-            if(game.UserId == null || game.AdventureId == null || game.UserId == game.AdventureId)
+            // //if the game is missing fields or some fields are the same ignore it
+            if(game.UserId == null || game.AdventureId == null || game.Id == null)
                  return;
+            HashSet<string> ids = new HashSet<string>(IDS_TO_COMPARE);
+            ids.Add(game.UserId);
+            ids.Add(game.Id);
+            ids.Add(game.AdventureId);
+            if(ids.Count != 3)
+                return;
             _gameService.InsertGameIfItDoesntExist(game);
 
             //get the initial location

@@ -51,12 +51,64 @@ namespace MapApi.Tests.Events {
                 AdventureId = "adv",
                 UserId = "usr"
             };
+            _games.Clear();
 
             //act
             _newGameHandler.HandleNewGameEvent(game);
 
             //assert
             Assert.Single(_games);
+        }
+
+        [Fact]
+        public void HandleNewGameEvent_NullUserId_Invalid() {
+            //arrange, new game object
+            var game = new Game() {
+                Id = "1",
+                AdventureId = "adv",
+                UserId = null
+            };
+            _games.Clear();
+
+            //act
+            _newGameHandler.HandleNewGameEvent(game);
+
+            //assert
+            Assert.Empty(_games);
+        }
+
+        [Fact]
+        public void HandleNewGameEvent_NullAdventureId_Invalid() {
+            //arrange, new game object
+            var game = new Game() {
+                Id = "1",
+                AdventureId = null,
+                UserId = "usr"
+            };
+            _games.Clear();
+
+            //act
+            _newGameHandler.HandleNewGameEvent(game);
+
+            //assert
+            Assert.Empty(_games);
+        }
+
+        [Fact]
+        public void HandleNewGameEvent_AdventureAndUserSameId_Invalid() {
+            //arrange, new game object
+            var game = new Game() {
+                Id = "1",
+                AdventureId = "usr",
+                UserId = "usr"
+            };
+            _games.Clear();
+
+            //act
+            _newGameHandler.HandleNewGameEvent(game);
+
+            //assert
+            Assert.Empty(_games);
         }
     }
 }
