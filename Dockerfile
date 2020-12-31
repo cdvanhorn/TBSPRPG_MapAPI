@@ -13,4 +13,4 @@ RUN dotnet restore
 
 #run the site
 #RUN dotnet watch run --project ./app.csproj
-ENTRYPOINT ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:5000"]
+ENTRYPOINT ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:8004"]
