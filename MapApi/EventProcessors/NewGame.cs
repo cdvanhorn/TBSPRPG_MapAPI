@@ -42,8 +42,8 @@ namespace MapApi.EventProcessors
 
             //get the initial location
 	        //AdventureService.GetInitialLocation(adventureid, userid);
-            //var response = await _adventureService.GetInitialLocation(game.AdventureId, game.UserId);
-            //Console.WriteLine(response.Response.Content);
+            var response = await _adventureService.GetInitialLocation(game.AdventureId, game.UserId);
+            Console.WriteLine(response.Response.Content);
 
             //create an enter_location event that contains this service id plus the new_game event id
         }
