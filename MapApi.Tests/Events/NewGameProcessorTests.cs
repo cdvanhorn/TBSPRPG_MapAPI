@@ -40,7 +40,7 @@ namespace MapApi.Tests.Events {
                 service.GetUrlForService(It.IsAny<string>())
             ).ReturnsAsync((string name) => services.Find(srv => srv.Name == name).Url);
 
-            _newGameHandler = new NewGameHandler(mockGameService.Object, mockServiceService.Object);
+            _newGameHandler = new NewGameHandler(mockGameService.Object, mockServiceService.Object, null);
         }
 
         [Fact]

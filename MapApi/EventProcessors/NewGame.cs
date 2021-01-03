@@ -5,6 +5,8 @@ using TbspRpgLib.EventProcessors;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Settings;
 using TbspRpgLib.Services;
+using TbspRpgLib.Jwt;
+using TbspRpgLib.InterServiceCommunication;
 
 using MapApi.Adapters;
 using MapApi.Entities;
@@ -17,10 +19,12 @@ namespace MapApi.EventProcessors
         private readonly int IDS_TO_COMPARE = 3;
         private IGameService _gameService;
         private IServiceService _serviceService;
+        private IAdventureServiceCom _adventureService;
 
-        public NewGameHandler(IGameService gameService, IServiceService serviceService) {
+        public NewGameHandler(IGameService gameService, IServiceService serviceService, IAdventureServiceCom adventureService) {
             _gameService = gameService;
             _serviceService = serviceService;
+            _adventureService = adventureService;
         }
 
         public async void HandleNewGameEvent(Game game) {
@@ -37,8 +41,9 @@ namespace MapApi.EventProcessors
             _gameService.InsertGameIfItDoesntExist(game);
 
             //get the initial location
-            var adventureUrl = await _serviceService.GetUrlForService(ServiceService.ADVENTURE_SERVICE_NAME);
-            Console.WriteLine(adventureUrl);
+	        //AdventureService.GetInitialLocation(adventureid, userid);
+            //var response = await _adventureService.GetInitialLocation(game.AdventureId, game.UserId);
+            //Console.WriteLine(response.Response.Content);
 
             //create an enter_location event that contains this service id plus the new_game event id
         }
@@ -49,12 +54,14 @@ namespace MapApi.EventProcessors
         private IGameService _gameService;
         private NewGameHandler _newGameHandler;
 
-        public NewGame(IEventStoreSettings eventStoreSettings, IDatabaseSettings databaseSettings) :
+        public NewGame(IEventStoreSettings eventStoreSettings, IDatabaseSettings databaseSettings, IJwtSettings jwtSettings) :
             base("map", eventStoreSettings, databaseSettings){
             _gameAdapter = new GameAggregateAdapter();
             IGameRepository _gameRepository = new GameRepository(databaseSettings);
             _gameService = new GameService(_gameRepository);
-            _newGameHandler = new NewGameHandler(_gameService, _serviceService);
+            var serviceCommunication = new ServiceCommunication(_serviceService, jwtSettings);
+            _newGameHandler = new NewGameHandler(_gameService, _serviceService,
+                new AdventureServiceCom(serviceCommunication));
         }
 
         protected override void HandleEvent(Aggregate aggregate, string eventId, ulong position) {
