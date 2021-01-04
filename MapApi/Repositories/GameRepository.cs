@@ -1,42 +1,40 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
-using MongoDB.Driver;
-
-using TbspRpgLib.Settings;
-using TbspRpgLib.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 using MapApi.Entities;
 
 namespace MapApi.Repositories {
     public interface IGameRepository {
         Task<List<Game>> GetAllGames();
-        Task<Game> GetGame(string gameId);
+        ValueTask<Game> GetGame(int gameId);
         void InsertGameIfItDoesntExist(Game game);
     }
 
-    public class GameRepository : MongoRepository, IGameRepository {
-        private IMongoCollection<Game> _games;
+    public class GameRepository : IGameRepository {
+        private MapContext _context;
 
-        public GameRepository(IDatabaseSettings databaseSettings) : base(databaseSettings) {
-            _games = _mongoDatabase.GetCollection<Game>("games");
+        public GameRepository(MapContext context) {
+            _context = context;
         }
 
         public Task<List<Game>> GetAllGames() {
-            return _games.Find(game => true).ToListAsync();
+            return _context.Games.AsQueryable().ToListAsync();
         }
 
-        public Task<Game> GetGame(string gameId) {
-            return _games.Find(gm => gm.Id == gameId).FirstOrDefaultAsync();
+        public ValueTask<Game> GetGame(int gameId) {
+            return _context.Games.FindAsync(gameId);
         }
 
-        public void InsertGameIfItDoesntExist(Game game) {
-            var options = new ReplaceOptions { IsUpsert = true };
-            var result = _games.ReplaceOneAsync<Game>(
-                doc =>
-                    doc.UserId == game.UserId
-                    && doc.AdventureId == game.AdventureId,
-                game, options);
+        public async void InsertGameIfItDoesntExist(Game game) {
+            Game dbGame = await GetGame(game.Id);
+            if(dbGame == null) {
+                //we need to do an insert
+                _context.Games.Add(game);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

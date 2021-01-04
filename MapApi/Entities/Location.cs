@@ -1,18 +1,10 @@
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace MapApi.Entities {
     public class Location {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public int Id { get; set; }
+        public int GameId { get; set; }
 
-        [BsonRepresentation(BsonType.ObjectId)]
-        [BsonElement("game_id")]
-        public string GameId { get; set; }
-
-        [BsonElement("location_name")]
-        public string LocationName { get; set; }
+        public Game Game { get; set; }
     }
 }
 

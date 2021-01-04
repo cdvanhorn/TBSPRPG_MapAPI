@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
 
 using TbspRpgLib;
 
@@ -42,6 +43,12 @@ namespace MapApi
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IGameRepository, GameRepository>();
             services.AddScoped<IGameService, GameService>();
+
+            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+
+            services.AddDbContext<MapContext>(
+                options => options.UseNpgsql(connectionString)
+            );
 
             //start workers
             services.AddHostedService<NewGame>();

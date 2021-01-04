@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 
+using Microsoft.EntityFrameworkCore;
+
 using TbspRpgLib.EventProcessors;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Settings;
 using TbspRpgLib.Services;
-using TbspRpgLib.Jwt;
 using TbspRpgLib.InterServiceCommunication;
 
 using MapApi.Adapters;
@@ -16,7 +17,6 @@ using MapApi.Repositories;
 namespace MapApi.EventProcessors
 {
     public class NewGameHandler {
-        private readonly int IDS_TO_COMPARE = 3;
         private IGameService _gameService;
         private IServiceService _serviceService;
         private IAdventureServiceCom _adventureService;
@@ -27,23 +27,14 @@ namespace MapApi.EventProcessors
             _adventureService = adventureService;
         }
 
-        public async void HandleNewGameEvent(Game game) {
+        public void HandleNewGameEvent(Game game) {
             //this will be our business logic, so we can do some testing
             // //if the game is missing fields or some fields are the same ignore it
-            if(game.UserId == null || game.AdventureId == null || game.Id == null)
-                 return;
-            HashSet<string> ids = new HashSet<string>(IDS_TO_COMPARE);
-            ids.Add(game.UserId);
-            ids.Add(game.Id);
-            ids.Add(game.AdventureId);
-            if(ids.Count != 3)
-                return;
             _gameService.InsertGameIfItDoesntExist(game);
 
             //get the initial location
-	        //AdventureService.GetInitialLocation(adventureid, userid);
-            var response = await _adventureService.GetInitialLocation(game.AdventureId, game.UserId);
-            Console.WriteLine(response.Response.Content);
+	        //var response = await _adventureService.GetInitialLocation(game.AdventureId, game.UserId);
+            //Console.WriteLine(response.Response.Content);
 
             //create an enter_location event that contains this service id plus the new_game event id
         }
@@ -56,10 +47,21 @@ namespace MapApi.EventProcessors
 
         public NewGame(IEventStoreSettings eventStoreSettings, IDatabaseSettings databaseSettings, IJwtSettings jwtSettings) :
             base("map", eventStoreSettings, databaseSettings){
+            //create an adapter to convert game aggregate to a game object
             _gameAdapter = new GameAggregateAdapter();
-            IGameRepository _gameRepository = new GameRepository(databaseSettings);
+
+            //create a context so can get the game repository and service
+            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+            var optionsBuilder = new DbContextOptionsBuilder<MapContext>();
+            optionsBuilder.UseNpgsql(connectionString);
+            var context = new MapContext(optionsBuilder.Options);
+            IGameRepository _gameRepository = new GameRepository(context);
             _gameService = new GameService(_gameRepository);
+
+            //create service communication object to call other services
             var serviceCommunication = new ServiceCommunication(_serviceService, jwtSettings);
+
+            //create a new game handler that has a method that will be called when a new game is received
             _newGameHandler = new NewGameHandler(_gameService, _serviceService,
                 new AdventureServiceCom(serviceCommunication));
         }

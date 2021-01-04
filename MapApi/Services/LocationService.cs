@@ -8,7 +8,7 @@ namespace MapApi.Services {
     public interface ILocationService {
         Task<List<Location>> GetAllLocations();
 
-        Task<Location> GetLocationForGame(string gameId);
+        Task<Location> GetLocationForGame(int gameId);
     }
 
     public class LocationService : ILocationService {
@@ -22,7 +22,7 @@ namespace MapApi.Services {
             return _locationRepository.GetAllLocations();
         }
 
-        public Task<Location> GetLocationForGame(string gameId) {
+        public Task<Location> GetLocationForGame(int gameId) {
             return _locationRepository.GetLocationForGame(gameId);
         }
     }

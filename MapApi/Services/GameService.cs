@@ -7,7 +7,7 @@ using MapApi.Repositories;
 namespace MapApi.Services {
     public interface IGameService {
         Task<List<Game>> GetAllGames();
-        Task<Game> GetGame(string gameId);
+        ValueTask<Game> GetGame(int gameId);
         void InsertGameIfItDoesntExist(Game game);
     }
 
@@ -22,7 +22,7 @@ namespace MapApi.Services {
             return _gameRepository.GetAllGames();
         }
 
-        public Task<Game> GetGame(string gameId) {
+        public ValueTask<Game> GetGame(int gameId) {
             return _gameRepository.GetGame(gameId);
         }
 

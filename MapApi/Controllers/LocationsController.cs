@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 
 using System.Threading.Tasks;
+using System.Linq;
 
 using MapApi.Services;
+using MapApi.ViewModels;
 
 namespace MapApi.Controllers {
 
@@ -20,19 +22,22 @@ namespace MapApi.Controllers {
         public async Task<IActionResult> GetAll()
         {
             var locations = await _locationService.GetAllLocations();
-            return Ok(locations);
+            return Ok(locations.Select(loc => new LocationViewModel(loc)).ToList());
         }
 
         [HttpGet("{gameid}")]
         [Authorize]
-        public async Task<IActionResult> GetByGameId(string gameid) {
+        public async Task<IActionResult> GetByGameId(int gameid) {
             var userId = (string)HttpContext.Items["UserId"];
 
             //make sure the userid is the owner of the game
 
+            //we may consider checking if the game id is valid
+
             var location = await _locationService.GetLocationForGame(gameid);
-            //var game = await _gameService.GetByUserIdAndAdventureName(userId, name);
-            return Ok(location);
+            if(location == null)
+                return new JsonResult(new object());
+            return Ok(new LocationViewModel(location));
         }
 
     }
