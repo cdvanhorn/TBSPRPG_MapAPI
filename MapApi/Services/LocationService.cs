@@ -1,14 +1,16 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 using MapApi.Entities;
 using MapApi.Repositories;
+using MapApi.ViewModels;
 
 namespace MapApi.Services {
     public interface ILocationService {
-        Task<List<Location>> GetAllLocations();
+        Task<List<LocationViewModel>> GetAllLocations();
 
-        Task<Location> GetLocationForGame(int gameId);
+        Task<LocationViewModel> GetLocationForGame(int gameId);
     }
 
     public class LocationService : ILocationService {
@@ -18,12 +20,16 @@ namespace MapApi.Services {
             _locationRepository = locationRepository;
         }
 
-        public Task<List<Location>> GetAllLocations() {
-            return _locationRepository.GetAllLocations();
+        public async Task<List<LocationViewModel>> GetAllLocations() {
+            var locations = await _locationRepository.GetAllLocations();
+            return locations.Select(loc => new LocationViewModel(loc)).ToList();
         }
 
-        public Task<Location> GetLocationForGame(int gameId) {
-            return _locationRepository.GetLocationForGame(gameId);
+        public async Task<LocationViewModel> GetLocationForGame(int gameId) {
+            var location = await _locationRepository.GetLocationForGame(gameId);
+            if(location == null)
+                return null;
+            return new LocationViewModel(location);
         }
     }
 }

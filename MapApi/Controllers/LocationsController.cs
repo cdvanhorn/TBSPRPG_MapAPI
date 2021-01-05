@@ -21,8 +21,7 @@ namespace MapApi.Controllers {
         [Authorize]
         public async Task<IActionResult> GetAll()
         {
-            var locations = await _locationService.GetAllLocations();
-            return Ok(locations.Select(loc => new LocationViewModel(loc)).ToList());
+            return Ok(await _locationService.GetAllLocations());
         }
 
         [HttpGet("{gameid}")]
@@ -37,7 +36,7 @@ namespace MapApi.Controllers {
             var location = await _locationService.GetLocationForGame(gameid);
             if(location == null)
                 return new JsonResult(new object());
-            return Ok(new LocationViewModel(location));
+            return Ok(location);
         }
 
     }
