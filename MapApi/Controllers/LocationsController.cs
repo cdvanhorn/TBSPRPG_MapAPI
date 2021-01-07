@@ -26,7 +26,7 @@ namespace MapApi.Controllers {
 
         [HttpGet("{gameid}")]
         [Authorize]
-        public async Task<IActionResult> GetByGameId(int gameid) {
+        public async Task<IActionResult> GetByGameId(string gameid) {
             var userId = (string)HttpContext.Items["UserId"];
 
             //make sure the userid is the owner of the game
@@ -34,8 +34,6 @@ namespace MapApi.Controllers {
             //we may consider checking if the game id is valid
 
             var location = await _locationService.GetLocationForGame(gameid);
-            if(location == null)
-                return new JsonResult(new object());
             return Ok(location);
         }
 

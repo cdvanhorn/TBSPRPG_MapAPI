@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System;
 
 using MapApi.Entities;
 using MapApi.Repositories;
@@ -10,7 +11,7 @@ namespace MapApi.Services {
     public interface ILocationService {
         Task<List<LocationViewModel>> GetAllLocations();
 
-        Task<LocationViewModel> GetLocationForGame(int gameId);
+        Task<LocationViewModel> GetLocationForGame(string gameId);
     }
 
     public class LocationService : ILocationService {
@@ -25,8 +26,11 @@ namespace MapApi.Services {
             return locations.Select(loc => new LocationViewModel(loc)).ToList();
         }
 
-        public async Task<LocationViewModel> GetLocationForGame(int gameId) {
-            var location = await _locationRepository.GetLocationForGame(gameId);
+        public async Task<LocationViewModel> GetLocationForGame(string gameId) {
+            Guid guid;
+            if(!Guid.TryParse(gameId, out guid))
+                return null;
+            var location = await _locationRepository.GetLocationForGame(guid);
             if(location == null)
                 return null;
             return new LocationViewModel(location);

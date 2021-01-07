@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +10,7 @@ using MapApi.Entities;
 namespace MapApi.Repositories {
     public interface IGameRepository {
         Task<List<Game>> GetAllGames();
-        ValueTask<Game> GetGame(int gameId);
+        Task<Game> GetGame(Guid gameId);
         void InsertGameIfItDoesntExist(Game game);
     }
 
@@ -24,8 +25,8 @@ namespace MapApi.Repositories {
             return _context.Games.AsQueryable().ToListAsync();
         }
 
-        public ValueTask<Game> GetGame(int gameId) {
-            return _context.Games.FindAsync(gameId);
+        public Task<Game> GetGame(Guid gameId) {
+            return _context.Games.AsQueryable().Where(g => g.Id == gameId).FirstOrDefaultAsync();
         }
 
         public async void InsertGameIfItDoesntExist(Game game) {

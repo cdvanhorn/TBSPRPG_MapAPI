@@ -11,8 +11,22 @@ namespace MapApi.Repositories {
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Game>().ToTable("MapService.Game");
-            modelBuilder.Entity<Location>().ToTable("MapService.Location");
+            modelBuilder.HasPostgresExtension("uuid-ossp");
+            
+            modelBuilder.Entity<Game>().ToTable("game");
+            modelBuilder.Entity<Location>().ToTable("location");
+
+            modelBuilder.Entity<Game>().HasKey(g => g.Id);
+            modelBuilder.Entity<Game>().Property(g => g.Id)
+                .HasColumnType("uuid")
+                .HasDefaultValueSql("uuid_generate_v4()")
+                .IsRequired();
+
+            modelBuilder.Entity<Location>().HasKey(a => a.Id);
+            modelBuilder.Entity<Location>().Property(a => a.Id)
+                .HasColumnType("uuid")
+                .HasDefaultValueSql("uuid_generate_v4()")
+                .IsRequired();
 
             modelBuilder.Entity<Game>()
                 .HasOne(g => g.Location)

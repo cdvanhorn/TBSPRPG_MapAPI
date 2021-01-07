@@ -1,6 +1,8 @@
 using TbspRpgLib.Aggregates;
 using MapApi.Entities;
 
+using System;
+
 namespace MapApi.Adapters {
 
     public interface IGameAggregateAdapter {
@@ -20,9 +22,9 @@ namespace MapApi.Adapters {
 
         public Game ToEntity(GameAggregate aggregate) {
             Game game = new Game();
-            game.Id = int.Parse(aggregate.Id);
-            game.UserId = int.Parse(aggregate.UserId);
-            game.AdventureId = int.Parse(aggregate.AdventureId);
+            game.Id = Guid.Parse(aggregate.Id);
+            game.UserId = Guid.Parse(aggregate.UserId);
+            game.AdventureId = Guid.Parse(aggregate.AdventureId);
             return game;
         }
     }

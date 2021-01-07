@@ -47,9 +47,9 @@ namespace MapApi.Tests.Events {
         public void HandleNewGameEvent_Valid() {
             //arrange, new game object
             var game = new Game() {
-                Id = 1,
-                AdventureId = 2,
-                UserId = 3
+                Id = new Guid(),
+                AdventureId = new Guid(),
+                UserId = new Guid()
             };
             _games.Clear();
 
