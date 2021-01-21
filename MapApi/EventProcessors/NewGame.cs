@@ -36,8 +36,11 @@ namespace MapApi.EventProcessors
             await _gameService.AddGame(game);
 
             //get the initial location
-	        //var response = await _adventureService.GetInitialLocation(game.AdventureId, game.UserId);
-            //Console.WriteLine(response.Response.Content);
+	        var response = await _adventureService.GetInitialLocation(
+                game.AdventureId.ToString(),
+                game.UserId.ToString()
+            );
+            Console.WriteLine(response.Response.Content);
 
             //create an enter_location event that contains this service id plus the new_game event id
         }
@@ -86,7 +89,7 @@ namespace MapApi.EventProcessors
                 await handler.HandleNewGameEvent(game);
 
                 // //update the event type position
-                await mapService.UpdatePosition(eventguid, position);
+                await mapService.UpdatePosition(_eventType.Id, position);
                 // //update the processed events
                 await mapService.EventProcessed(eventguid);
 

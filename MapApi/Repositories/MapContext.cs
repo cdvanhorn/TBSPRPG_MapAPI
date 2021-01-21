@@ -15,8 +15,8 @@ namespace MapApi.Repositories {
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasPostgresExtension("uuid-ossp");
             
-            modelBuilder.Entity<Game>().ToTable("game");
-            modelBuilder.Entity<Location>().ToTable("location");
+            modelBuilder.Entity<Game>().ToTable("games");
+            modelBuilder.Entity<Location>().ToTable("locations");
 
             modelBuilder.Entity<Game>().HasKey(g => g.Id);
             modelBuilder.Entity<Game>().Property(g => g.Id)

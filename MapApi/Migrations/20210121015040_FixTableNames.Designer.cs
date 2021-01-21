@@ -3,15 +3,17 @@ using System;
 using MapApi.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MapApi.Migrations
 {
     [DbContext(typeof(MapContext))]
-    partial class MapContextModelSnapshot : ModelSnapshot
+    [Migration("20210121015040_FixTableNames")]
+    partial class FixTableNames
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,7 +37,7 @@ namespace MapApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("games");
+                    b.ToTable("game");
                 });
 
             modelBuilder.Entity("MapApi.Entities.Location", b =>
@@ -53,7 +55,7 @@ namespace MapApi.Migrations
                     b.HasIndex("GameId")
                         .IsUnique();
 
-                    b.ToTable("locations");
+                    b.ToTable("location");
                 });
 
             modelBuilder.Entity("TbspRpgLib.Entities.EventTypePosition", b =>
