@@ -12,6 +12,7 @@ namespace MapApi.Repositories {
         Task<List<Game>> GetAllGames();
         Task<Game> GetGame(Guid gameId);
         void InsertGameIfItDoesntExist(Game game);
+        void AddGame(Game game);
     }
 
     public class GameRepository : IGameRepository {
@@ -36,6 +37,10 @@ namespace MapApi.Repositories {
                 _context.Games.Add(game);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public void AddGame(Game game) {
+            _context.Games.Add(game);
         }
     }
 }

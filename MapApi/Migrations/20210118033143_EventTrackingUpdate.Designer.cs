@@ -3,15 +3,17 @@ using System;
 using MapApi.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MapApi.Migrations
 {
     [DbContext(typeof(MapContext))]
-    partial class MapContextModelSnapshot : ModelSnapshot
+    [Migration("20210118033143_EventTrackingUpdate")]
+    partial class EventTrackingUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,6 +71,9 @@ namespace MapApi.Migrations
                     b.Property<decimal>("Position")
                         .HasColumnType("numeric(20,0)");
 
+                    b.Property<Guid>("ServiceId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.ToTable("event_type_positions");
@@ -82,6 +87,9 @@ namespace MapApi.Migrations
                         .HasDefaultValueSql("uuid_generate_v4()");
 
                     b.Property<Guid>("EventId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ServiceId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");

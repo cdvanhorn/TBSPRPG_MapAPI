@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using MapApi.Entities;
+using TbspRpgLib.Repositories;
 
 namespace MapApi.Repositories {
-    public class MapContext : DbContext {
+    public class MapContext : ServiceTrackingContext {
         public MapContext(DbContextOptions<MapContext> options) : base(options){}
 
         public DbSet<Game> Games { get; set; }
@@ -11,6 +12,7 @@ namespace MapApi.Repositories {
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.HasPostgresExtension("uuid-ossp");
             
             modelBuilder.Entity<Game>().ToTable("game");

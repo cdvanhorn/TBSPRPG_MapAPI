@@ -9,7 +9,9 @@ namespace MapApi.Services {
     public interface IGameService {
         Task<List<Game>> GetAllGames();
         Task<Game> GetGame(string gameId);
+        Task<Game> GetGame(Guid gameId);
         void InsertGameIfItDoesntExist(Game game);
+        Task AddGame(Game game);
     }
 
     public class GameService : IGameService {
@@ -27,11 +29,23 @@ namespace MapApi.Services {
             Guid guid;
             if(!Guid.TryParse(gameId, out guid))
                 return null;
-            return _gameRepository.GetGame(guid);
+            return GetGame(guid);
+        }
+
+        public Task<Game> GetGame(Guid gameId) {
+            return _gameRepository.GetGame(gameId);
         }
 
         public void InsertGameIfItDoesntExist(Game game) {
             _gameRepository.InsertGameIfItDoesntExist(game);
+        }
+
+        public async Task AddGame(Game game) {
+            //try and get the game
+            var dbGame = await GetGame(game.Id);
+            if(dbGame == null) {
+                _gameRepository.AddGame(game);
+            }
         }
     }
 }

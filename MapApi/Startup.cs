@@ -43,6 +43,8 @@ namespace MapApi
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IGameRepository, GameRepository>();
             services.AddScoped<IGameService, GameService>();
+            services.AddScoped<IMapRepository, MapRepository>();
+            services.AddScoped<IMapService, MapService>();
 
             var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 
