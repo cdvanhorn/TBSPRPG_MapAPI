@@ -41,15 +41,17 @@ namespace MapApi.EventProcessors
 
         public async Task HandleNewGameEvent(Game game, ulong streamPosition) {
             //this will be our business logic, so we can do some testing
-            // //if the game is missing fields or some fields are the same ignore it
-            await _gameService.AddGame(game);
-
+            
             //get the initial location
-	        var response = await _adventureService.GetInitialLocation(
+            var responseTask = _adventureService.GetInitialLocation(
                 game.AdventureId.ToString(),
                 game.UserId.ToString()
             );
 
+            // //if the game is missing fields or some fields are the same ignore it
+            await _gameService.AddGame(game);
+
+            var response = await responseTask;
             //game to get the location id from the response
             var responseDict = JsonSerializer.Deserialize<Dictionary<string, string>>(response.Response.Content);
 
@@ -60,7 +62,7 @@ namespace MapApi.EventProcessors
             });
 
             //send the event
-            //Console.WriteLine("Stream Position " + streamPosition);
+            Console.WriteLine("Stream Position " + streamPosition);
             await _eventService.SendEvent(enterLocationEvent, false, streamPosition);
         }
     }
