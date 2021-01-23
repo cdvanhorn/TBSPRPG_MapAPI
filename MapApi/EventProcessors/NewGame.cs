@@ -122,6 +122,7 @@ namespace MapApi.EventProcessors
                 } catch(Exception) {
                     //we need to do something with the exception
                     //there may be the potential for a rogue event to be out there
+                    //may need to resubscribe so we attempt to process the event again
                     transaction.Rollback();
                 }
             }
