@@ -94,28 +94,36 @@ namespace MapApi.EventProcessors
                 if(await mapService.HasBeenProcessed(eventguid))
                     return;
 
-                //create a handler
-                var gameService = scope.ServiceProvider.GetRequiredService<IGameService>();
-                var advServiceCom = scope.ServiceProvider.GetRequiredService<IAdventureServiceCom>();
-                var serviceService = scope.ServiceProvider.GetRequiredService<IServiceService>();
-                var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
-                var handler = new NewGameHandler(
-                    gameService,
-                    serviceService,
-                    advServiceCom,
-                    eventService
-                );
+                using var transaction = context.Database.BeginTransaction();
+                try {
+                    //create a handler
+                    var gameService = scope.ServiceProvider.GetRequiredService<IGameService>();
+                    var advServiceCom = scope.ServiceProvider.GetRequiredService<IAdventureServiceCom>();
+                    var serviceService = scope.ServiceProvider.GetRequiredService<IServiceService>();
+                    var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+                    var handler = new NewGameHandler(
+                        gameService,
+                        serviceService,
+                        advServiceCom,
+                        eventService
+                    );
 
-                //call the handler
-                await handler.HandleNewGameEvent(game, streamPosition);
+                    // //update the event type position
+                    await mapService.UpdatePosition(_eventType.Id, globalPosition);
+                    // //update the processed events
+                    await mapService.EventProcessed(eventguid);
 
-                // //update the event type position
-                await mapService.UpdatePosition(_eventType.Id, globalPosition);
-                // //update the processed events
-                await mapService.EventProcessed(eventguid);
+                    //call the handler
+                    await handler.HandleNewGameEvent(game, streamPosition);
 
-                //save the changes
-                context.SaveChanges();
+                    //save the changes
+                    context.SaveChanges();
+                    transaction.Commit();
+                } catch(Exception) {
+                    //we need to do something with the exception
+                    //there may be the potential for a rogue event to be out there
+                    transaction.Rollback();
+                }
             }
         }
     }
