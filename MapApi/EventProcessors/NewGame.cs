@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,7 @@ using TbspRpgLib.Aggregates;
 using TbspRpgLib.Settings;
 using TbspRpgLib.Services;
 using TbspRpgLib.InterServiceCommunication;
+using TbspRpgLib.Events;
 
 using MapApi.Adapters;
 using MapApi.Entities;
@@ -23,14 +25,21 @@ namespace MapApi.EventProcessors
         private IGameService _gameService;
         private IServiceService _serviceService;
         private IAdventureServiceCom _adventureService;
+        private IEventAdapter _eventAdapter;
+        private IEventService _eventService;
 
-        public NewGameHandler(IGameService gameService, IServiceService serviceService, IAdventureServiceCom adventureService) {
+        public NewGameHandler(IGameService gameService,
+                IServiceService serviceService,
+                IAdventureServiceCom adventureService,
+                IEventService eventService) {
             _gameService = gameService;
             _serviceService = serviceService;
             _adventureService = adventureService;
+            _eventService = eventService;
+            _eventAdapter = new EventAdapter();
         }
 
-        public async Task HandleNewGameEvent(Game game) {
+        public async Task HandleNewGameEvent(Game game, ulong streamPosition) {
             //this will be our business logic, so we can do some testing
             // //if the game is missing fields or some fields are the same ignore it
             await _gameService.AddGame(game);
@@ -40,9 +49,19 @@ namespace MapApi.EventProcessors
                 game.AdventureId.ToString(),
                 game.UserId.ToString()
             );
-            Console.WriteLine(response.Response.Content);
+
+            //game to get the location id from the response
+            var responseDict = JsonSerializer.Deserialize<Dictionary<string, string>>(response.Response.Content);
 
             //create an enter_location event that contains this service id plus the new_game event id
+            Event enterLocationEvent = _eventAdapter.NewEnterLocationEvent(new Location() {
+                Id = new Guid(responseDict["adventureId"]),
+                GameId = game.Id
+            });
+
+            //send the event
+            //Console.WriteLine("Stream Position " + streamPosition);
+            await _eventService.SendEvent(enterLocationEvent, false, streamPosition);
         }
     }
     public class NewGame : NewGameEventProcessor
@@ -60,7 +79,7 @@ namespace MapApi.EventProcessors
             InitializeStartPosition(context);
         }
 
-        protected override async void HandleEvent(Aggregate aggregate, string eventId, ulong position) {
+        protected override async void HandleEvent(Aggregate aggregate, string eventId, ulong streamPosition, ulong globalPosition) {
             GameAggregate gameAggregate = (GameAggregate)aggregate;
             // //convert the aggregate to one of our game objects
             Game game = _gameAdapter.ToEntity(gameAggregate);
@@ -79,17 +98,19 @@ namespace MapApi.EventProcessors
                 var gameService = scope.ServiceProvider.GetRequiredService<IGameService>();
                 var advServiceCom = scope.ServiceProvider.GetRequiredService<IAdventureServiceCom>();
                 var serviceService = scope.ServiceProvider.GetRequiredService<IServiceService>();
+                var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
                 var handler = new NewGameHandler(
                     gameService,
                     serviceService,
-                    advServiceCom
+                    advServiceCom,
+                    eventService
                 );
 
                 //call the handler
-                await handler.HandleNewGameEvent(game);
+                await handler.HandleNewGameEvent(game, streamPosition);
 
                 // //update the event type position
-                await mapService.UpdatePosition(_eventType.Id, position);
+                await mapService.UpdatePosition(_eventType.Id, globalPosition);
                 // //update the processed events
                 await mapService.EventProcessed(eventguid);
 
