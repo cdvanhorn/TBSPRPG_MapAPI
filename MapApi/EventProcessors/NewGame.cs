@@ -68,14 +68,12 @@ namespace MapApi.EventProcessors
                 GameId = game.Id
             });
 
-            Console.WriteLine("Stream Position " + gameAggregate.StreamPosition);
             //if the aggregate already have a destination equal to the location we're setting,
             //don't send the event
             if(gameAggregate.Destination != null && gameAggregate.Destination == responseDict["id"])
                 return;
 
             //send the event
-            Console.WriteLine("Stream Position " + gameAggregate.StreamPosition);
             await _eventService.SendEvent(enterLocationEvent, gameAggregate.StreamPosition);
         }
     }
