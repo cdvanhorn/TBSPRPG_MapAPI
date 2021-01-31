@@ -14,7 +14,7 @@ using MapApi.EventProcessors;
 
 namespace MapApi.Tests.Events {
     public class NewGameProcessorTests {
-        private NewGameHandler _newGameHandler;
+        private NewGameEventHandler _newGameHandler;
 
         private List<Game> _games;
 
@@ -39,7 +39,7 @@ namespace MapApi.Tests.Events {
                 service.GetUrlForService(It.IsAny<string>())
             ).Returns((string name) => services.Find(srv => srv.Name == name).Url);
 
-            _newGameHandler = new NewGameHandler(mockGameService.Object, mockServiceService.Object, null, null);
+            _newGameHandler = new NewGameEventHandler(mockGameService.Object, mockServiceService.Object, null, null);
         }
 
         // [Fact]

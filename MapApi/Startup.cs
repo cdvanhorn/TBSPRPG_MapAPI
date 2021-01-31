@@ -45,7 +45,7 @@ namespace MapApi
             services.AddScoped<IGameService, GameService>();
             services.AddScoped<IMapRepository, MapRepository>();
             services.AddScoped<IMapService, MapService>();
-            services.AddScoped<INewGameHandler, NewGameHandler>();
+            services.AddScoped<INewGameEventHandler, NewGameEventHandler>();
 
             var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 
@@ -54,7 +54,7 @@ namespace MapApi
             );
 
             //start workers
-            services.AddHostedService<NewGame>();
+            services.AddHostedService<EventProcessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
