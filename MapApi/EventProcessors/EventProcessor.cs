@@ -24,7 +24,8 @@ namespace MapApi.EventProcessors
                 base(
                     "map",
                     new string[] {
-                        Event.NEW_GAME_EVENT_TYPE
+                        Event.NEW_GAME_EVENT_TYPE,
+                        Event.ENTER_LOCATION_CHECK_EVENT_TYPE
                     },
                     eventStoreSettings
                 )
@@ -51,9 +52,10 @@ namespace MapApi.EventProcessors
 
                     //figure out what handler to call based on event type
                     IEventHandler handler = null;
-                    if(eventType.TypeName == Event.NEW_GAME_EVENT_TYPE) {
+                    if(eventType.TypeName == Event.NEW_GAME_EVENT_TYPE)
                         handler = scope.ServiceProvider.GetRequiredService<INewGameEventHandler>();
-                    }
+                    else if(eventType.TypeName == Event.ENTER_LOCATION_CHECK_EVENT_TYPE)
+                        handler = scope.ServiceProvider.GetRequiredService<IEnterLocationCheckEventHandler>();
                     if(handler != null)
                         await handler.HandleEvent(gameAggregate, evnt);
 
