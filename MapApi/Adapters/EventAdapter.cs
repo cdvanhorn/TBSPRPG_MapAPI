@@ -1,6 +1,7 @@
 using MapApi.Entities;
 using TbspRpgLib.Events;
-using TbspRpgLib.Events.Content;
+using TbspRpgLib.Events.Location;
+using TbspRpgLib.Events.Location.Content;
 
 namespace MapApi.Adapters {
     public interface IEventAdapter {
@@ -9,11 +10,11 @@ namespace MapApi.Adapters {
 
     public class EventAdapter : IEventAdapter {
         public Event NewEnterLocationEvent(Location location) {
-            EnterLocation enterLocation = new EnterLocation();
+            LocationEnter enterLocation = new LocationEnter();
             enterLocation.Destination = location.Id.ToString();
             enterLocation.Id = location.GameId.ToString();
             
-            EnterLocationEvent evnt = new EnterLocationEvent(enterLocation);
+            LocationEnterEvent evnt = new LocationEnterEvent(enterLocation);
             return evnt;
         }
     }
