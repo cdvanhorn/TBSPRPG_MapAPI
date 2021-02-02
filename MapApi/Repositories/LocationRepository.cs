@@ -11,6 +11,8 @@ namespace MapApi.Repositories {
     public interface ILocationRepository {
         Task<List<Location>> GetAllLocations();
         Task<Location> GetLocationForGame(Guid gameId);
+        void AddLocation(Location location);
+        Task<Location> GetLocation(Guid locationId);
     }
 
     public class LocationRepository : ILocationRepository {
@@ -28,6 +30,14 @@ namespace MapApi.Repositories {
             return _context.Locations.AsQueryable()
                 .Where(loc => loc.GameId == gameId)
                 .FirstOrDefaultAsync();
+        }
+
+        public void AddLocation(Location location) {
+            _context.Locations.Add(location);
+        }
+
+        public Task<Location> GetLocation(Guid locationId) {
+            return _context.Locations.AsQueryable().Where(loc => loc.Id == locationId).FirstOrDefaultAsync();
         }
     }
 }

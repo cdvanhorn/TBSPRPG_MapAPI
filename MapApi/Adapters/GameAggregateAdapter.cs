@@ -8,6 +8,7 @@ namespace MapApi.Adapters {
     public interface IGameAggregateAdapter {
         GameAggregate ToAggregate(Game game);
         Game ToEntity(GameAggregate aggregate);
+        Location ToLocationFromCheck(GameAggregate aggregate);
     }
         
 
@@ -26,6 +27,15 @@ namespace MapApi.Adapters {
             game.UserId = Guid.Parse(aggregate.UserId);
             game.AdventureId = Guid.Parse(aggregate.AdventureId);
             return game;
+        }
+
+        public Location ToLocationFromCheck(GameAggregate aggregate) {
+            Location location = new Location();
+            location.GameId = Guid.Parse(aggregate.Id);
+            if(aggregate.Checks.Location) {
+                location.Id = Guid.Parse(aggregate.Destination);
+            }
+            return location;
         }
     }
 }
