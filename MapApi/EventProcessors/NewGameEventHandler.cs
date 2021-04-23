@@ -5,32 +5,30 @@ using System.Collections.Generic;
 
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Events;
-using TbspRpgLib.Services;
 using TbspRpgLib.InterServiceCommunication;
 
 using MapApi.Services;
 using MapApi.Entities;
+using TbspRpgLib.InterServiceCommunication.RequestModels;
 
 namespace MapApi.EventProcessors {
     public interface INewGameEventHandler : IEventHandler {
     }
 
     public class NewGameEventHandler : EventHandler, INewGameEventHandler {
-        private IGameService _gameService;
-        private IServiceService _serviceService;
-        private IAdventureServiceCom _adventureService;
-        private IEventService _eventService;
+        private readonly IGameService _gameService;
+        private readonly IAggregateService _aggregateService;
+        private readonly IAdventureServiceLink _adventureService;
 
         public NewGameEventHandler(
             IGameService gameService,
-            IServiceService serviceService,
-            IAdventureServiceCom adventureServiceCom,
-            IEventService eventService) : base()
+            IAggregateService aggregateService,
+            IAdventureServiceLink adventureServiceCom
+            ) : base()
         {
             _gameService = gameService;
-            _serviceService = serviceService;
+            _aggregateService = aggregateService;
             _adventureService = adventureServiceCom;
-            _eventService = eventService;
         }
 
         public async Task HandleEvent(GameAggregate gameAggregate, Event evnt) {
@@ -39,9 +37,8 @@ namespace MapApi.EventProcessors {
 
             //get the initial location
             var responseTask = _adventureService.GetInitialLocation(
-                game.AdventureId.ToString(),
-                game.UserId.ToString()
-            );
+                new AdventureRequest() { Id = game.AdventureId },
+                new Credentials() { UserId = game.UserId.ToString() });
 
             // //if the game is missing fields or some fields are the same ignore it
             await _gameService.AddGame(game);
@@ -51,7 +48,7 @@ namespace MapApi.EventProcessors {
             var responseDict = JsonSerializer.Deserialize<Dictionary<string, string>>(response.Response.Content);
 
             //create an enter_location event that contains this service id plus the new_game event id
-            Event enterLocationEvent = _eventAdapter.NewEnterLocationEvent(new Location() {
+            var enterLocationEvent = _eventAdapter.NewEnterLocationEvent(new Location() {
                 Id = new Guid(responseDict["id"]),
                 GameId = game.Id
             });
@@ -62,7 +59,10 @@ namespace MapApi.EventProcessors {
                 return;
 
             //send the event
-            await _eventService.SendEvent(enterLocationEvent, gameAggregate.StreamPosition);
+            await _aggregateService.AppendToAggregate(
+                AggregateService.GAME_AGGREGATE_TYPE,
+                enterLocationEvent,
+                gameAggregate.StreamPosition);
         }
     }
 }

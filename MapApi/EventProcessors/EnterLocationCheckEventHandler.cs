@@ -12,25 +12,30 @@ namespace MapApi.EventProcessors {
     public interface IEnterLocationCheckEventHandler : IEventHandler {}
 
     public class EnterLocationCheckEventHandler : EventHandler, IEnterLocationCheckEventHandler {
-        IEventService _eventService;
-        ILocationService _locationService;
+        private readonly ILocationService _locationService;
+        private readonly IAggregateService _aggregateService;
 
-        public EnterLocationCheckEventHandler(IEventService eventService, ILocationService locationService) : base() {
-            _eventService = eventService;
+        public EnterLocationCheckEventHandler(IAggregateService aggregateService, ILocationService locationService) : base()
+        {
+            _aggregateService = aggregateService;
             _locationService = locationService;
         }
 
         public async Task HandleEvent(GameAggregate gameAggregate, Event evnt) {
             //send an location_enter_pass event or location_enter_fail event
             Event resultEvent;
-            Location loc = _gameAdapter.ToLocationFromCheck(gameAggregate);
+            var loc = _gameAdapter.ToLocationFromCheck(gameAggregate);
             if(gameAggregate.Checks.Location) {
                 resultEvent = _eventAdapter.NewLocationEnterPassEvent(loc);
                 await _locationService.AddLocation(loc);
             } else {
                 resultEvent = _eventAdapter.NewLocationEnterFailEvent(loc);
             }
-            await _eventService.SendEvent(resultEvent, gameAggregate.StreamPosition);
+
+            await _aggregateService.AppendToAggregate(
+                AggregateService.GAME_AGGREGATE_TYPE,
+                resultEvent,
+                gameAggregate.StreamPosition);
         }
     }
 }
