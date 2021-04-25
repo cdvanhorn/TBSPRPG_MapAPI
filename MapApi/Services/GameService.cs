@@ -8,7 +8,6 @@ using MapApi.Repositories;
 namespace MapApi.Services {
     public interface IGameService {
         Task<List<Game>> GetAllGames();
-        Task<Game> GetGame(string gameId);
         Task<Game> GetGame(Guid gameId);
         Task AddGame(Game game);
     }
@@ -22,13 +21,6 @@ namespace MapApi.Services {
 
         public Task<List<Game>> GetAllGames() {
             return _gameRepository.GetAllGames();
-        }
-
-        public Task<Game> GetGame(string gameId) {
-            Guid guid;
-            if(!Guid.TryParse(gameId, out guid))
-                return null;
-            return GetGame(guid);
         }
 
         public Task<Game> GetGame(Guid gameId) {
