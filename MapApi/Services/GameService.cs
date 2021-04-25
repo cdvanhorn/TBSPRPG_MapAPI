@@ -10,7 +10,6 @@ namespace MapApi.Services {
         Task<List<Game>> GetAllGames();
         Task<Game> GetGame(string gameId);
         Task<Game> GetGame(Guid gameId);
-        void InsertGameIfItDoesntExist(Game game);
         Task AddGame(Game game);
     }
 
@@ -34,10 +33,6 @@ namespace MapApi.Services {
 
         public Task<Game> GetGame(Guid gameId) {
             return _gameRepository.GetGame(gameId);
-        }
-
-        public void InsertGameIfItDoesntExist(Game game) {
-            _gameRepository.InsertGameIfItDoesntExist(game);
         }
 
         public async Task AddGame(Game game) {

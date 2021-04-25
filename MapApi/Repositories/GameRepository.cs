@@ -11,7 +11,6 @@ namespace MapApi.Repositories {
     public interface IGameRepository {
         Task<List<Game>> GetAllGames();
         Task<Game> GetGame(Guid gameId);
-        void InsertGameIfItDoesntExist(Game game);
         void AddGame(Game game);
     }
 
@@ -28,15 +27,6 @@ namespace MapApi.Repositories {
 
         public Task<Game> GetGame(Guid gameId) {
             return _context.Games.AsQueryable().Where(g => g.Id == gameId).FirstOrDefaultAsync();
-        }
-
-        public async void InsertGameIfItDoesntExist(Game game) {
-            Game dbGame = await GetGame(game.Id);
-            if(dbGame == null) {
-                //we need to do an insert
-                _context.Games.Add(game);
-                await _context.SaveChangesAsync();
-            }
         }
 
         public void AddGame(Game game) {
