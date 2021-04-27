@@ -1,4 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using MapApi.Controllers;
+using MapApi.Entities;
+using MapApi.Repositories;
+using MapApi.Services;
+using MapApi.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace MapApi.Tests.Controllers
@@ -7,19 +15,42 @@ namespace MapApi.Tests.Controllers
     {
         #region Setup
 
+        private readonly Guid _testGameId;
+        private readonly Guid _testLocationId;
+        
         public LocationControllerTests() : base("LocationControllerTests")
         {
+            _testGameId = Guid.NewGuid();
+            _testLocationId = Guid.NewGuid();
             Seed();
         }
 
         public void Seed()
         {
-            
+            using var context = new MapContext(_dbContextOptions);
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
+
+            var loc = new Location()
+            {
+                Id = _testLocationId,
+                Game = new Game()
+                {
+                    Id = _testGameId,
+                    UserId = Guid.NewGuid(),
+                    AdventureId = Guid.NewGuid()
+                }
+            };
+
+            context.Add(loc);
+            context.SaveChanges();
         }
 
-        public static LocationsController CreateController()
+        private static LocationsController CreateController(MapContext context)
         {
-            return null;
+            var repo = new LocationRepository(context);
+            var service = new LocationService(repo);
+            return new LocationsController(service);
         }
 
         #endregion
@@ -29,7 +60,19 @@ namespace MapApi.Tests.Controllers
         [Fact]
         public async void GetAll_ReturnAll()
         {
+            //arrange
+            await using var context = new MapContext(_dbContextOptions);
+            var controller = CreateController(context);
             
+            //act
+            var result = await controller.GetAll();
+            
+            //assert
+            var okObjectResult = result as OkObjectResult;
+            Assert.NotNull(okObjectResult);
+            var locations = okObjectResult.Value as IEnumerable<LocationViewModel>;
+            Assert.NotNull(locations);
+            Assert.Equal(1, locations.Count());
         }
 
         #endregion
@@ -39,13 +82,36 @@ namespace MapApi.Tests.Controllers
         [Fact]
         public async void GetByGameId_Valid_ReturnOne()
         {
+            //arrange
+            await using var context = new MapContext(_dbContextOptions);
+            var controller = CreateController(context);
             
+            //act
+            var result = await controller.GetByGameId(_testGameId.ToString());
+            
+            //assert
+            var okObjectResult = result as OkObjectResult;
+            Assert.NotNull(okObjectResult);
+            var location = okObjectResult.Value as LocationViewModel;
+            Assert.NotNull(location);
+            Assert.Equal(_testLocationId.ToString(), location.Id);
         }
 
         [Fact]
         public async void GetByGameId_Invalid_ReturnNone()
         {
+            //arrange
+            await using var context = new MapContext(_dbContextOptions);
+            var controller = CreateController(context);
             
+            //act
+            var result = await controller.GetByGameId(Guid.NewGuid().ToString());
+            
+            //assert
+            var okObjectResult = result as OkObjectResult;
+            Assert.NotNull(okObjectResult);
+            var location = okObjectResult.Value as LocationViewModel;
+            Assert.Null(location);
         }
 
         #endregion

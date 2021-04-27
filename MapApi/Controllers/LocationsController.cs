@@ -27,7 +27,7 @@ namespace MapApi.Controllers {
         [HttpGet("{gameid}")]
         [Authorize]
         public async Task<IActionResult> GetByGameId(string gameid) {
-            var userId = (string)HttpContext.Items["UserId"];
+            //var userId = (string)HttpContext.Items["UserId"];
 
             //make sure the userid is the owner of the game
 
