@@ -57,7 +57,11 @@ namespace MapApi.Tests.EventProcessors
             var aggregateService = new Mock<IAggregateService>();
             aggregateService.Setup(service =>
                 service.AppendToAggregate(It.IsAny<string>(), It.IsAny<Event>(), It.IsAny<ulong>())
-            ).Callback<string, Event, ulong>((type, evnt, n) => events.Add(evnt));
+            ).Callback<string, Event, ulong>((type, evnt, n) =>
+            {
+                if (n <= 100)
+                    events.Add(evnt);
+            });
 
             var adventureServiceLink = new Mock<IAdventureServiceLink>();
             adventureServiceLink.Setup(asl =>
@@ -153,6 +157,30 @@ namespace MapApi.Tests.EventProcessors
                 UserId = Guid.NewGuid().ToString(),
                 Destination = _testLocationId.ToString(),
                 GlobalPosition = 10
+            };
+            
+            //act
+            await handler.HandleEvent(agg, null);
+            
+            //assert
+            context.SaveChanges();
+            Assert.Single(context.Games);
+            Assert.Empty(events);
+        }
+        
+        [Fact]
+        public async void HandleEvent_EventAlreadyProcessed_EventNotGenerated()
+        {
+            //arrange
+            await using var context = new MapContext(_dbContextOptions);
+            var events = new List<Event>();
+            var handler = CreateHandler(context, events);
+            var agg = new GameAggregate()
+            {
+                Id = _testGameId.ToString(),
+                AdventureId = Guid.NewGuid().ToString(),
+                UserId = Guid.NewGuid().ToString(),
+                StreamPosition = 101
             };
             
             //act
