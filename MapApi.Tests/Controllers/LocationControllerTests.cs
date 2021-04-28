@@ -25,7 +25,7 @@ namespace MapApi.Tests.Controllers
             Seed();
         }
 
-        public void Seed()
+        private void Seed()
         {
             using var context = new MapContext(_dbContextOptions);
             context.Database.EnsureDeleted();
@@ -72,7 +72,7 @@ namespace MapApi.Tests.Controllers
             Assert.NotNull(okObjectResult);
             var locations = okObjectResult.Value as IEnumerable<LocationViewModel>;
             Assert.NotNull(locations);
-            Assert.Equal(1, locations.Count());
+            Assert.Single(locations);
         }
 
         #endregion
@@ -87,14 +87,14 @@ namespace MapApi.Tests.Controllers
             var controller = CreateController(context);
             
             //act
-            var result = await controller.GetByGameId(_testGameId.ToString());
+            var result = await controller.GetByGameId(_testGameId);
             
             //assert
             var okObjectResult = result as OkObjectResult;
             Assert.NotNull(okObjectResult);
             var location = okObjectResult.Value as LocationViewModel;
             Assert.NotNull(location);
-            Assert.Equal(_testLocationId.ToString(), location.Id);
+            Assert.Equal(_testLocationId, location.Id);
         }
 
         [Fact]
@@ -105,7 +105,7 @@ namespace MapApi.Tests.Controllers
             var controller = CreateController(context);
             
             //act
-            var result = await controller.GetByGameId(Guid.NewGuid().ToString());
+            var result = await controller.GetByGameId(Guid.NewGuid());
             
             //assert
             var okObjectResult = result as OkObjectResult;

@@ -57,7 +57,7 @@ namespace MapApi.Tests.Repositories
             var locations = await respository.GetAllLocations();
             
             //assert
-            Assert.Equal(1, locations.Count);
+            Assert.Single(locations);
             Assert.Equal(_testLocationId, locations.First().Id);
             Assert.Equal(_testGameId, locations.First().GameId);
         }

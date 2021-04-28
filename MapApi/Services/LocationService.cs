@@ -10,13 +10,13 @@ using MapApi.ViewModels;
 namespace MapApi.Services {
     public interface ILocationService {
         Task<List<LocationViewModel>> GetAllLocations();
-        Task<LocationViewModel> GetLocationForGame(string gameId);
+        Task<LocationViewModel> GetLocationForGame(Guid gameId);
         Task<Location> GetLocation(Guid locationId);
         Task AddLocation(Location location);
     }
 
     public class LocationService : ILocationService {
-        private ILocationRepository _locationRepository;
+        private readonly ILocationRepository _locationRepository;
 
         public LocationService(ILocationRepository locationRepository) {
             _locationRepository = locationRepository;
@@ -27,14 +27,9 @@ namespace MapApi.Services {
             return locations.Select(loc => new LocationViewModel(loc)).ToList();
         }
 
-        public async Task<LocationViewModel> GetLocationForGame(string gameId) {
-            Guid guid;
-            if(!Guid.TryParse(gameId, out guid))
-                return null;
-            var location = await _locationRepository.GetLocationForGame(guid);
-            if(location == null)
-                return null;
-            return new LocationViewModel(location);
+        public async Task<LocationViewModel> GetLocationForGame(Guid gameId) {
+            var location = await _locationRepository.GetLocationForGame(gameId);
+            return location == null ? null : new LocationViewModel(location);
         }
 
         public Task<Location> GetLocation(Guid locationId) {

@@ -9,8 +9,8 @@ namespace MapApi.EventProcessors {
     }
 
     public class EventHandler {
-        protected IGameAggregateAdapter _gameAdapter;
-        protected IEventAdapter _eventAdapter;
+        protected readonly IGameAggregateAdapter _gameAdapter;
+        protected readonly IEventAdapter _eventAdapter;
 
         public EventHandler() {
             _gameAdapter = new GameAggregateAdapter();

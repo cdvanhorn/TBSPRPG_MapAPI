@@ -15,7 +15,7 @@ namespace MapApi.Repositories {
     }
 
     public class GameRepository : IGameRepository {
-        private MapContext _context;
+        private readonly MapContext _context;
 
         public GameRepository(MapContext context) {
             _context = context;

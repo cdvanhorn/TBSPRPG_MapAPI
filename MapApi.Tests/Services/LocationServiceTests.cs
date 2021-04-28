@@ -63,8 +63,8 @@ namespace MapApi.Tests.Services
             var locations = await service.GetAllLocations();
             
             //assert
-            Assert.Equal(1, locations.Count);
-            Assert.NotNull(locations.Where(lvm => lvm.Id == _testLocationId.ToString()));
+            Assert.Single(locations);
+            Assert.NotNull(locations.Where(lvm => lvm.Id == _testLocationId));
         }
 
         #endregion
@@ -113,11 +113,11 @@ namespace MapApi.Tests.Services
             var service = CreateService(context);
             
             //act
-            var location = await service.GetLocationForGame(_testGameId.ToString());
+            var location = await service.GetLocationForGame(_testGameId);
             
             //assert
             Assert.NotNull(location);
-            Assert.Equal(_testLocationId.ToString(), location.Id);
+            Assert.Equal(_testLocationId, location.Id);
         }
 
         [Fact]
@@ -128,7 +128,7 @@ namespace MapApi.Tests.Services
             var service = CreateService(context);
             
             //act
-            var location = await service.GetLocationForGame(Guid.NewGuid().ToString());
+            var location = await service.GetLocationForGame(Guid.NewGuid());
             
             //assert
             Assert.Null(location);

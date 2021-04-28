@@ -13,7 +13,7 @@ namespace MapApi.Services {
     }
 
     public class GameService : IGameService {
-        private IGameRepository _gameRepository;
+        private readonly IGameRepository _gameRepository;
 
         public GameService(IGameRepository gameRepository) {
             _gameRepository = gameRepository;

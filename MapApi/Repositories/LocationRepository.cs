@@ -16,7 +16,7 @@ namespace MapApi.Repositories {
     }
 
     public class LocationRepository : ILocationRepository {
-        private MapContext _context;
+        private readonly MapContext _context;
 
         public LocationRepository(MapContext context) {
             _context = context;

@@ -14,24 +14,30 @@ namespace MapApi.Adapters {
 
     public class GameAggregateAdapter : IGameAggregateAdapter {
         public GameAggregate ToAggregate(Game game) {
-            GameAggregate agg = new GameAggregate();
-            agg.Id = game.Id.ToString();
-            agg.UserId = game.UserId.ToString();
-            agg.AdventureId = game.AdventureId.ToString();
+            var agg = new GameAggregate
+            {
+                Id = game.Id.ToString(),
+                UserId = game.UserId.ToString(),
+                AdventureId = game.AdventureId.ToString()
+            };
             return agg;
         }
 
         public Game ToEntity(GameAggregate aggregate) {
-            Game game = new Game();
-            game.Id = Guid.Parse(aggregate.Id);
-            game.UserId = Guid.Parse(aggregate.UserId);
-            game.AdventureId = Guid.Parse(aggregate.AdventureId);
+            var game = new Game
+            {
+                Id = Guid.Parse(aggregate.Id),
+                UserId = Guid.Parse(aggregate.UserId),
+                AdventureId = Guid.Parse(aggregate.AdventureId)
+            };
             return game;
         }
 
         public Location ToLocationFromCheck(GameAggregate aggregate) {
-            Location location = new Location();
-            location.GameId = Guid.Parse(aggregate.Id);
+            var location = new Location
+            {
+                GameId = Guid.Parse(aggregate.Id)
+            };
             if(aggregate.Checks.Location) {
                 location.Id = Guid.Parse(aggregate.Destination);
             }
