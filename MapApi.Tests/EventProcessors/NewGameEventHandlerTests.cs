@@ -108,7 +108,7 @@ namespace MapApi.Tests.EventProcessors
             Assert.Equal(2, context.Games.Count());
             Assert.Single(events);
             var gameEvent = events.First();
-            Assert.Equal("location_enter", gameEvent.Type);
+            Assert.Equal(Event.LOCATION_ENTER_EVENT_TYPE, gameEvent.Type);
             var enterLocation = JsonSerializer.Deserialize<LocationEnter>(gameEvent.GetDataJson());
             Assert.Equal(_testLocationId.ToString(), enterLocation.Destination);
             Assert.Equal(gameEvent.GetDataId(), enterLocation.Id);
@@ -137,7 +137,7 @@ namespace MapApi.Tests.EventProcessors
             Assert.Single(context.Games);
             Assert.Single(events);
             var gameEvent = events.First();
-            Assert.Equal("location_enter", gameEvent.Type);
+            Assert.Equal(Event.LOCATION_ENTER_EVENT_TYPE, gameEvent.Type);
             var enterLocation = JsonSerializer.Deserialize<LocationEnter>(gameEvent.GetDataJson());
             Assert.Equal(_testLocationId.ToString(), enterLocation.Destination);
             Assert.Equal(gameEvent.GetDataId(), enterLocation.Id);
