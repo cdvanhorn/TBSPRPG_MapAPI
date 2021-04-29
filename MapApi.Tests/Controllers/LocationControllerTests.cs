@@ -33,7 +33,8 @@ namespace MapApi.Tests.Controllers
 
             var loc = new Location()
             {
-                Id = _testLocationId,
+                Id = Guid.NewGuid(),
+                LocationId = _testLocationId,
                 Game = new Game()
                 {
                     Id = _testGameId,

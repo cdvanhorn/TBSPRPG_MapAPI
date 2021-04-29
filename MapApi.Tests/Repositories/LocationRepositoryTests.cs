@@ -29,7 +29,8 @@ namespace MapApi.Tests.Repositories
 
             var loc = new Location()
             {
-                Id = _testLocationId,
+                Id = Guid.NewGuid(),
+                LocationId = _testLocationId,
                 Game = new Game()
                 {
                     Id = _testGameId,
@@ -58,7 +59,7 @@ namespace MapApi.Tests.Repositories
             
             //assert
             Assert.Single(locations);
-            Assert.Equal(_testLocationId, locations.First().Id);
+            Assert.Equal(_testLocationId, locations.First().LocationId);
             Assert.Equal(_testGameId, locations.First().GameId);
         }
 
@@ -78,7 +79,7 @@ namespace MapApi.Tests.Repositories
             
             //assert
             Assert.NotNull(location);
-            Assert.Equal(_testLocationId, location.Id);
+            Assert.Equal(_testLocationId, location.LocationId);
         }
 
         [Fact]

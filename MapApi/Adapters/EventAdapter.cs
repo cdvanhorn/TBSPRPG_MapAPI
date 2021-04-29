@@ -25,7 +25,7 @@ namespace MapApi.Adapters {
         public Event NewLocationEnterPassEvent(Location location) {
             var content = new LocationEnterPass
             {
-                CurrentLocation = location.Id.ToString(),
+                CurrentLocation = location.LocationId.ToString(),
                 Id = location.GameId.ToString(),
                 Destination = ""
             };

@@ -27,7 +27,7 @@ namespace MapApi.EventProcessors {
             var loc = _gameAdapter.ToLocationFromCheck(gameAggregate);
             if(gameAggregate.Checks.Location) {
                 resultEvent = _eventAdapter.NewLocationEnterPassEvent(loc);
-                await _locationService.AddLocation(loc);
+                await _locationService.AddOrUpdateLocation(loc);
             } else {
                 resultEvent = _eventAdapter.NewLocationEnterFailEvent(loc);
             }

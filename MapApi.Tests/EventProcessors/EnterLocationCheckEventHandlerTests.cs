@@ -38,7 +38,8 @@ namespace MapApi.Tests.EventProcessors
             
             var loc = new Location()
             {
-                Id = _testLocationId,
+                Id = Guid.NewGuid(),
+                LocationId = _testLocationId,
                 Game = new Game()
                 {
                     Id = _testGameId,
@@ -169,7 +170,7 @@ namespace MapApi.Tests.EventProcessors
             Assert.Empty(dict["Destination"]);
             var location = context.Locations.FirstOrDefault(loc => loc.GameId == _testGameId);
             Assert.NotNull(location);
-            Assert.Equal(addedLocationId, location.Id);
+            Assert.Equal(addedLocationId, location.LocationId);
         }
 
         #endregion

@@ -28,7 +28,7 @@ namespace MapApi.Controllers {
 
             //we may consider checking if the game id is valid
 
-            var location = await _locationService.GetLocationForGame(gameId);
+            var location = await _locationService.GetLocationForGameVm(gameId);
             return Ok(location);
         }
 

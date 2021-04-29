@@ -8,7 +8,7 @@ namespace MapApi.ViewModels {
         public LocationViewModel() {}
 
         public LocationViewModel(Location location) {
-            Id = location.Id;
+            Id = location.LocationId;
         }
     }
 }

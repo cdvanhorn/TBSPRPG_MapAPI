@@ -3,6 +3,7 @@ using System;
 namespace MapApi.Entities {
     public class Location {
         public Guid Id { get; set; }
+        public Guid LocationId { get; set; }
         public Guid GameId { get; set; }
 
         public Game Game { get; set; }
