@@ -6,6 +6,7 @@ using System;
 using MapApi.Entities;
 using MapApi.Repositories;
 using MapApi.ViewModels;
+using TbspRpgLib.InterServiceCommunication;
 
 namespace MapApi.Services {
     public interface ILocationService {
@@ -18,9 +19,12 @@ namespace MapApi.Services {
 
     public class LocationService : ILocationService {
         private readonly ILocationRepository _locationRepository;
+        //private readonly IAdventureServiceLink _adventureService;
 
+        //public LocationService(ILocationRepository locationRepository, IAdventureServiceLink adventureService) {
         public LocationService(ILocationRepository locationRepository) {
             _locationRepository = locationRepository;
+            //_adventureService = adventureService;
         }
 
         public async Task<List<LocationViewModel>> GetAllLocations() {
@@ -60,6 +64,11 @@ namespace MapApi.Services {
             {
                 AddLocation(location);
             }
+        }
+
+        public async Task EnterLocation(Location location)
+        {
+            //use the inter service communication endpoints
         }
     }
 }

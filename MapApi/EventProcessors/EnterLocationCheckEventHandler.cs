@@ -28,6 +28,14 @@ namespace MapApi.EventProcessors {
             if(gameAggregate.Checks.Location) {
                 resultEvent = _eventAdapter.NewLocationEnterPassEvent(loc);
                 await _locationService.AddOrUpdateLocation(loc);
+                
+                //get the routes from the adventure
+                //send a validate routes event
+                //the game system api will listen for those events
+                //  and check if the routes are available to the player based on their statistics
+                //  we'll check if the routes are available/unavailable because of game state
+                //the game system api will produce a ValidateRouteCheck event
+                //  which we'll listen for and update the current routes for this game
             } else {
                 resultEvent = _eventAdapter.NewLocationEnterFailEvent(loc);
             }

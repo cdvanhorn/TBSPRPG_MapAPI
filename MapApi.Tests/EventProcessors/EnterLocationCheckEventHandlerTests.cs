@@ -6,12 +6,9 @@ using MapApi.Entities;
 using MapApi.EventProcessors;
 using MapApi.Repositories;
 using MapApi.Services;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Moq;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Events;
-using TbspRpgLib.Events.Location;
-using TbspRpgLib.Events.Location.Content;
 using Xunit;
 
 namespace MapApi.Tests.EventProcessors
