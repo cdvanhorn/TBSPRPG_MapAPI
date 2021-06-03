@@ -9,6 +9,8 @@ namespace MapApi.Repositories {
         public DbSet<Game> Games { get; set; }
 
         public DbSet<Location> Locations { get; set; }
+        
+        public DbSet<Route> Routes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -17,15 +19,22 @@ namespace MapApi.Repositories {
             
             modelBuilder.Entity<Game>().ToTable("games");
             modelBuilder.Entity<Location>().ToTable("locations");
+            modelBuilder.Entity<Route>().ToTable("routes");
 
-            modelBuilder.Entity<Game>().HasKey(g => g.Id);
-            modelBuilder.Entity<Game>().Property(g => g.Id)
+            modelBuilder.Entity<Game>().HasKey(x => x.Id);
+            modelBuilder.Entity<Game>().Property(x => x.Id)
                 .HasColumnType("uuid")
                 .HasDefaultValueSql("uuid_generate_v4()")
                 .IsRequired();
 
-            modelBuilder.Entity<Location>().HasKey(a => a.Id);
-            modelBuilder.Entity<Location>().Property(a => a.Id)
+            modelBuilder.Entity<Location>().HasKey(x => x.Id);
+            modelBuilder.Entity<Location>().Property(x => x.Id)
+                .HasColumnType("uuid")
+                .HasDefaultValueSql("uuid_generate_v4()")
+                .IsRequired();
+            
+            modelBuilder.Entity<Route>().HasKey(x => x.Id);
+            modelBuilder.Entity<Route>().Property(x => x.Id)
                 .HasColumnType("uuid")
                 .HasDefaultValueSql("uuid_generate_v4()")
                 .IsRequired();
@@ -34,6 +43,11 @@ namespace MapApi.Repositories {
                 .HasOne(g => g.Location)
                 .WithOne(l => l.Game)
                 .HasForeignKey<Location>(l => l.GameId);
+
+            modelBuilder.Entity<Location>()
+                .HasMany(l => l.Routes)
+                .WithOne(r => r.Location)
+                .HasForeignKey(r => r.LocationId);
         }
     }
 }

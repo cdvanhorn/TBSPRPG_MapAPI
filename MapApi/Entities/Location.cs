@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace MapApi.Entities {
     public class Location {
@@ -7,6 +8,7 @@ namespace MapApi.Entities {
         public Guid GameId { get; set; }
 
         public Game Game { get; set; }
+        public ICollection<Route> Routes { get; set; }
     }
 }
 
