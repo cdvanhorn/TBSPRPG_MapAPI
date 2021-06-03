@@ -53,31 +53,10 @@ namespace MapApi.Tests.EventProcessors
         {
             var repository = new GameRepository(context);
             var service = new GameService(repository);
-            
-            var aggregateService = new Mock<IAggregateService>();
-            aggregateService.Setup(service =>
-                service.AppendToAggregate(It.IsAny<string>(), It.IsAny<Event>(), It.IsAny<ulong>())
-            ).Callback<string, Event, ulong>((type, evnt, n) =>
-            {
-                if (n <= 100)
-                    events.Add(evnt);
-            });
-
-            var adventureServiceLink = new Mock<IAdventureServiceLink>();
-            adventureServiceLink.Setup(asl =>
-                asl.GetInitialLocation(It.IsAny<AdventureRequest>(), It.IsAny<Credentials>())
-            ).ReturnsAsync((AdventureRequest adventureRequest, Credentials creds) => new IscResponse()
-            {
-                Response = new RestResponse()
-                {
-                    Content = "{\"id\": \"" + _testLocationId + "\"}"
-                }
-            });
-
             return new NewGameEventHandler(
                 service,
-                aggregateService.Object,
-                adventureServiceLink.Object);
+                Mocks.MockAggregateService(events),
+                Mocks.MockAdventureServiceLink(_testLocationId));
         }
 
         #endregion

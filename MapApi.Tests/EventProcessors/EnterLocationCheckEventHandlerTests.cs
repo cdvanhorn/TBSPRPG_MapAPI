@@ -49,21 +49,15 @@ namespace MapApi.Tests.EventProcessors
             context.SaveChanges();
         }
 
-        private static EnterLocationCheckEventHandler CreateHandler(MapContext context, ICollection<Event> events)
+        private EnterLocationCheckEventHandler CreateHandler(MapContext context, ICollection<Event> events)
         {
             var repository = new LocationRepository(context);
             var service = new LocationService(repository);
-            
-            var aggregateService = new Mock<IAggregateService>();
-            aggregateService.Setup(service =>
-                service.AppendToAggregate(It.IsAny<string>(), It.IsAny<Event>(), It.IsAny<ulong>())
-            ).Callback<string, Event, ulong>((type, evnt, n) =>
-            {
-                if (n <= 100)
-                    events.Add(evnt);
-            });
 
-            return new EnterLocationCheckEventHandler(aggregateService.Object, service);
+            return new EnterLocationCheckEventHandler(
+                Mocks.MockAggregateService(events),
+                service,
+                Mocks.MockAdventureServiceLink(_testLocationId));
         }
 
         #endregion
