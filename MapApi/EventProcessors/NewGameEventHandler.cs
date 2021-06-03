@@ -18,17 +18,15 @@ namespace MapApi.EventProcessors {
     public class NewGameEventHandler : EventHandler, INewGameEventHandler {
         private readonly IGameService _gameService;
         private readonly IAggregateService _aggregateService;
-        private readonly IAdventureServiceLink _adventureService;
 
         public NewGameEventHandler(
             IGameService gameService,
             IAggregateService aggregateService,
-            IAdventureServiceLink adventureServiceCom
-            ) : base()
+            IAdventureServiceLink adventureServiceLink
+            ) : base(adventureServiceLink)
         {
             _gameService = gameService;
             _aggregateService = aggregateService;
-            _adventureService = adventureServiceCom;
         }
 
         public async Task HandleEvent(GameAggregate gameAggregate, Event evnt) {
@@ -36,7 +34,7 @@ namespace MapApi.EventProcessors {
             Game game = _gameAdapter.ToEntity(gameAggregate);
 
             //get the initial location
-            var responseTask = _adventureService.GetInitialLocation(
+            var responseTask = _adventureServiceLink.GetInitialLocation(
                 new AdventureRequest() { Id = game.AdventureId },
                 new Credentials() { UserId = game.UserId.ToString() });
 

@@ -7,6 +7,7 @@ using MapApi.Entities;
 using MapApi.Services;
 
 using System.Threading.Tasks;
+using TbspRpgLib.InterServiceCommunication;
 
 namespace MapApi.EventProcessors {
     public interface IEnterLocationCheckEventHandler : IEventHandler {}
@@ -15,7 +16,10 @@ namespace MapApi.EventProcessors {
         private readonly ILocationService _locationService;
         private readonly IAggregateService _aggregateService;
 
-        public EnterLocationCheckEventHandler(IAggregateService aggregateService, ILocationService locationService) : base()
+        public EnterLocationCheckEventHandler(
+            IAggregateService aggregateService,
+            ILocationService locationService,
+            IAdventureServiceLink adventureServiceLink) : base(adventureServiceLink)
         {
             _aggregateService = aggregateService;
             _locationService = locationService;
