@@ -5,6 +5,7 @@ namespace MapApi.Entities
     public class Route
     {
         public Guid Id { get; set; }
+        public Guid RouteId { get; set; }
         public string Name { get; set; }
         public Guid LocationId { get; set; }
         
