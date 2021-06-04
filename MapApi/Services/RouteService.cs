@@ -22,7 +22,7 @@ namespace MapApi.Services
         
         public Task<List<Route>> GetRoutesForGame(Guid gameId)
         {
-            throw new NotImplementedException();
+            return _repository.GetRoutesForGame(gameId);
         }
     }
 }
