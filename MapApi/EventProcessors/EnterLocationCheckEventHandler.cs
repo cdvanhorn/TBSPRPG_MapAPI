@@ -38,21 +38,21 @@ namespace MapApi.EventProcessors {
             var game = _gameAdapter.ToEntity(gameAggregate);
             if(gameAggregate.Checks.Location) {
                 //get the routes from the adventure
-                var routesTask = _adventureServiceLink.GetRoutesForLocation(
-                    new AdventureRequest()
-                    {
-                        LocationId = loc.LocationId
-                    }, new Credentials()
-                    {
-                        UserId = game.UserId.ToString()
-                    });
+                // var routesTask = _adventureServiceLink.GetRoutesForLocation(
+                //     new AdventureRequest()
+                //     {
+                //         LocationId = loc.LocationId
+                //     }, new Credentials()
+                //     {
+                //         UserId = game.UserId.ToString()
+                //     });
                 
                 resultEvent = _eventAdapter.NewLocationEnterPassEvent(loc);
                 await _locationService.AddOrUpdateLocation(loc);
 
-                var routeResponse = await routesTask;
-                var serviceRoutes = JsonSerializer.Deserialize<List<Route>>(routeResponse.Response.Content);
-                serviceRoutes = FilterRoutes(serviceRoutes);
+                // var routeResponse = await routesTask;
+                // var serviceRoutes = JsonSerializer.Deserialize<List<Route>>(routeResponse.Response.Content);
+                //serviceRoutes = FilterRoutes(serviceRoutes);
                 //send a validate route event that will have a list of routes to check
 
                 //send a validate routes event

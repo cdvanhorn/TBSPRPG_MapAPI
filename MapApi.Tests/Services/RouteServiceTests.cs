@@ -38,6 +38,7 @@ namespace MapApi.Tests.Services
             var route = new Route()
             {
                 Id = Guid.NewGuid(),
+                RouteId = Guid.NewGuid(),
                 LocationId = _testLocationId,
                 Name = "testroute"
             };
@@ -45,6 +46,7 @@ namespace MapApi.Tests.Services
             var route2 = new Route()
             {
                 Id = Guid.NewGuid(),
+                RouteId = Guid.NewGuid(),
                 LocationId = Guid.NewGuid(),
                 Name = "testroute2"
             };

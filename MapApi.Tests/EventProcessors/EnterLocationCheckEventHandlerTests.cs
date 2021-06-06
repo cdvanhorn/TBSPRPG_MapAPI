@@ -6,7 +6,6 @@ using MapApi.Entities;
 using MapApi.EventProcessors;
 using MapApi.Repositories;
 using MapApi.Services;
-using Moq;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Events;
 using Xunit;
@@ -76,7 +75,12 @@ namespace MapApi.Tests.EventProcessors
             var agg = new GameAggregate()
             {
                 Id = addedGameId.ToString(),
-                Destination = addedLocationId.ToString(),
+                UserId = Guid.NewGuid().ToString(),
+                AdventureId = Guid.NewGuid().ToString(),
+                MapData = new MapData()
+                {
+                    DestinationLocation = addedLocationId.ToString()
+                },
                 Checks = new GameAggregateChecks()
                 {
                     Location = true
@@ -94,7 +98,7 @@ namespace MapApi.Tests.EventProcessors
             Assert.Equal(Event.LOCATION_ENTER_PASS_EVENT_TYPE, levent.Type);
             var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(levent.GetDataJson());
             Assert.Equal(addedLocationId.ToString(), dict["CurrentLocation"]);
-            Assert.Empty(dict["Destination"]);
+            Assert.Empty(dict["DestinationLocation"]);
         }
 
         [Fact]
@@ -109,7 +113,12 @@ namespace MapApi.Tests.EventProcessors
             var agg = new GameAggregate()
             {
                 Id = addedGameId.ToString(),
-                Destination = addedLocationId.ToString(),
+                UserId = Guid.NewGuid().ToString(),
+                AdventureId = Guid.NewGuid().ToString(),
+                MapData = new MapData()
+                {
+                    DestinationLocation = addedLocationId.ToString()
+                },
                 Checks = new GameAggregateChecks()
                 {
                     Location = false
@@ -126,7 +135,7 @@ namespace MapApi.Tests.EventProcessors
             var levent = events.First();
             Assert.Equal(Event.LOCATION_ENTER_FAIL_EVENT_TYPE, levent.Type);
             var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(levent.GetDataJson());
-            Assert.Empty(dict["Destination"]);
+            Assert.Empty(dict["DestinationLocation"]);
         }
         
         [Fact]
@@ -140,7 +149,12 @@ namespace MapApi.Tests.EventProcessors
             var agg = new GameAggregate()
             {
                 Id = _testGameId.ToString(),
-                Destination = addedLocationId.ToString(),
+                UserId = Guid.NewGuid().ToString(),
+                AdventureId = Guid.NewGuid().ToString(),
+                MapData = new MapData()
+                {
+                    DestinationLocation = addedLocationId.ToString()
+                },
                 Checks = new GameAggregateChecks()
                 {
                     Location = true
@@ -158,7 +172,7 @@ namespace MapApi.Tests.EventProcessors
             Assert.Equal(Event.LOCATION_ENTER_PASS_EVENT_TYPE, levent.Type);
             var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(levent.GetDataJson());
             Assert.Equal(addedLocationId.ToString(), dict["CurrentLocation"]);
-            Assert.Empty(dict["Destination"]);
+            Assert.Empty(dict["DestinationLocation"]);
             var location = context.Locations.FirstOrDefault(loc => loc.GameId == _testGameId);
             Assert.NotNull(location);
             Assert.Equal(addedLocationId, location.LocationId);

@@ -39,7 +39,7 @@ namespace MapApi.Adapters {
                 GameId = Guid.Parse(aggregate.Id)
             };
             if(aggregate.Checks.Location) {
-                location.LocationId = Guid.Parse(aggregate.Destination);
+                location.LocationId = Guid.Parse(aggregate.MapData.DestinationLocation);
             }
             return location;
         }

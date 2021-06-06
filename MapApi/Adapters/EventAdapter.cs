@@ -14,7 +14,7 @@ namespace MapApi.Adapters {
         public Event NewEnterLocationEvent(Location location) {
             var enterLocation = new LocationEnter
             {
-                Destination = location.Id.ToString(),
+                DestinationLocation = location.Id.ToString(),
                 Id = location.GameId.ToString()
             };
 
@@ -27,7 +27,7 @@ namespace MapApi.Adapters {
             {
                 CurrentLocation = location.LocationId.ToString(),
                 Id = location.GameId.ToString(),
-                Destination = ""
+                DestinationLocation = ""
             };
 
             return new LocationEnterPassEvent(content);
@@ -37,7 +37,7 @@ namespace MapApi.Adapters {
             var content = new LocationEnterFail
             {
                 Id = location.GameId.ToString(),
-                Destination = ""
+                DestinationLocation = ""
             };
             return new LocationEnterFailEvent(content);
         }

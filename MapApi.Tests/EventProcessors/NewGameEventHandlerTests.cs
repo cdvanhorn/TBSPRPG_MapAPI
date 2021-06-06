@@ -6,13 +6,9 @@ using MapApi.Entities;
 using MapApi.EventProcessors;
 using MapApi.Repositories;
 using MapApi.Services;
-using Moq;
-using RestSharp;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Events;
 using TbspRpgLib.Events.Location.Content;
-using TbspRpgLib.InterServiceCommunication;
-using TbspRpgLib.InterServiceCommunication.RequestModels;
 using Xunit;
 
 namespace MapApi.Tests.EventProcessors
@@ -89,7 +85,7 @@ namespace MapApi.Tests.EventProcessors
             var gameEvent = events.First();
             Assert.Equal(Event.LOCATION_ENTER_EVENT_TYPE, gameEvent.Type);
             var enterLocation = JsonSerializer.Deserialize<LocationEnter>(gameEvent.GetDataJson());
-            Assert.Equal(_testLocationId.ToString(), enterLocation.Destination);
+            Assert.Equal(_testLocationId.ToString(), enterLocation.DestinationLocation);
             Assert.Equal(gameEvent.GetDataId(), enterLocation.Id);
         }
 
@@ -118,7 +114,7 @@ namespace MapApi.Tests.EventProcessors
             var gameEvent = events.First();
             Assert.Equal(Event.LOCATION_ENTER_EVENT_TYPE, gameEvent.Type);
             var enterLocation = JsonSerializer.Deserialize<LocationEnter>(gameEvent.GetDataJson());
-            Assert.Equal(_testLocationId.ToString(), enterLocation.Destination);
+            Assert.Equal(_testLocationId.ToString(), enterLocation.DestinationLocation);
             Assert.Equal(gameEvent.GetDataId(), enterLocation.Id);
         }
 
@@ -134,7 +130,10 @@ namespace MapApi.Tests.EventProcessors
                 Id = _testGameId.ToString(),
                 AdventureId = Guid.NewGuid().ToString(),
                 UserId = Guid.NewGuid().ToString(),
-                Destination = _testLocationId.ToString(),
+                MapData = new MapData()
+                {
+                    DestinationLocation = _testLocationId.ToString()
+                },
                 GlobalPosition = 10
             };
             

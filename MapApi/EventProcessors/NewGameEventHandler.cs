@@ -53,7 +53,8 @@ namespace MapApi.EventProcessors {
 
             //if the aggregate already have a destination equal to the location we're setting,
             //don't send the event
-            if(gameAggregate.Destination != null && gameAggregate.Destination == responseDict["id"])
+            if(gameAggregate.MapData.DestinationLocation != null && 
+               gameAggregate.MapData.DestinationLocation == responseDict["id"])
                 return;
 
             //send the event
