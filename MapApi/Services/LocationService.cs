@@ -62,13 +62,13 @@ namespace MapApi.Services {
             }
             else
             {
-                AddLocation(location);
+                await AddLocation(location);
             }
         }
 
-        public async Task EnterLocation(Location location)
-        {
-            //use the inter service communication endpoints
-        }
+        // public async Task EnterLocation(Location location)
+        // {
+        //     //use the inter service communication endpoints
+        // }
     }
 }

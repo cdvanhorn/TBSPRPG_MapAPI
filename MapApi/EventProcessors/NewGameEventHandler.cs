@@ -9,6 +9,7 @@ using TbspRpgLib.InterServiceCommunication;
 
 using MapApi.Services;
 using MapApi.Entities;
+using MapApi.Entities.AdventureService;
 using TbspRpgLib.InterServiceCommunication.RequestModels;
 
 namespace MapApi.EventProcessors {
@@ -43,18 +44,24 @@ namespace MapApi.EventProcessors {
 
             var response = await responseTask;
             //game to get the location id from the response
-            var responseDict = JsonSerializer.Deserialize<Dictionary<string, string>>(response.Response.Content);
+            var initialLocation = JsonSerializer.Deserialize<InitialLocation>(
+                response.Response.Content,
+                new JsonSerializerOptions()
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
             //create an enter_location event that contains this service id plus the new_game event id
+            //also need to get the routes for the destination
             var enterLocationEvent = _eventAdapter.NewEnterLocationEvent(new Location() {
-                Id = new Guid(responseDict["id"]),
+                Id = initialLocation.Id,
                 GameId = game.Id
             });
 
             //if the aggregate already have a destination equal to the location we're setting,
             //don't send the event
             if(gameAggregate.MapData.DestinationLocation != null && 
-               gameAggregate.MapData.DestinationLocation == responseDict["id"])
+               gameAggregate.MapData.DestinationLocation == initialLocation.Id.ToString())
                 return;
 
             //send the event
