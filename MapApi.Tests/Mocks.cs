@@ -14,6 +14,8 @@ namespace MapApi.Tests
         public static IAdventureServiceLink MockAdventureServiceLink(Guid testLocationId)
         {
             var adventureServiceLink = new Mock<IAdventureServiceLink>();
+            
+            //get initial location
             adventureServiceLink.Setup(asl =>
                 asl.GetInitialLocation(It.IsAny<AdventureRequest>(), It.IsAny<Credentials>())
             ).ReturnsAsync((AdventureRequest adventureRequest, Credentials creds) => new IscResponse()
@@ -21,6 +23,17 @@ namespace MapApi.Tests
                 Response = new RestResponse()
                 {
                     Content = "{\"id\": \"" + testLocationId + "\"}"
+                }
+            });
+            
+            //get routes
+            adventureServiceLink.Setup(asl =>
+                asl.GetRoutesForLocation(It.IsAny<AdventureRequest>(), It.IsAny<Credentials>())
+            ).ReturnsAsync((AdventureRequest adventureRequest, Credentials creds) => new IscResponse()
+            {
+                Response = new RestResponse()
+                {
+                    Content = "[{\"id\": \"" + Guid.NewGuid() + "\"}, {\"id\": \"" + Guid.NewGuid() + "\"}]"
                 }
             });
             return adventureServiceLink.Object;
