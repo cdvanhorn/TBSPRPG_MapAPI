@@ -19,6 +19,7 @@ using MapApi.Repositories;
 using MapApi.Services;
 using MapApi.Adapters;
 using MapApi.EventProcessors;
+using AdventureService = MapApi.Services.AdventureService;
 
 namespace MapApi
 {
@@ -38,13 +39,13 @@ namespace MapApi
             LibStartup.ConfigureTbspRpgServices(Configuration, services);
 
             services.AddScoped<IGameAggregateAdapter, GameAggregateAdapter>();
-            //services.AddScoped<IEventAdapter, EventAdapter>();
             services.AddScoped<ILocationRepository, LocationRepository>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IGameRepository, GameRepository>();
             services.AddScoped<IGameService, GameService>();
             services.AddScoped<IMapRepository, MapRepository>();
             services.AddScoped<IMapService, MapService>();
+            services.AddScoped<IAdventureService, AdventureService>();
             services.AddScoped<INewGameEventHandler, NewGameEventHandler>();
             services.AddScoped<IEnterLocationCheckEventHandler, EnterLocationCheckEventHandler>();
 

@@ -47,10 +47,14 @@ namespace MapApi.Tests.EventProcessors
         {
             var repository = new GameRepository(context);
             var service = new GameService(repository);
+            
+            var adventureService = new AdventureService(
+                Mocks.MockAdventureServiceLink(_testLocationId, _testRouteId));
+            
             return new NewGameEventHandler(
                 service,
                 Mocks.MockAggregateService(events),
-                Mocks.MockAdventureServiceLink(_testLocationId, _testRouteId));
+                adventureService);
         }
 
         #endregion

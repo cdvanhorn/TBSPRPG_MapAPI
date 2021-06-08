@@ -24,8 +24,8 @@ namespace MapApi.EventProcessors {
         public NewGameEventHandler(
             IGameService gameService,
             IAggregateService aggregateService,
-            IAdventureServiceLink adventureServiceLink
-            ) : base(adventureServiceLink)
+            IAdventureService adventureService
+            ) : base(adventureService)
         {
             _gameService = gameService;
             _aggregateService = aggregateService;
@@ -33,52 +33,24 @@ namespace MapApi.EventProcessors {
 
         private async Task<Event> CreateEnterLocationEvent(Game game, string aggregateDestinationLocation)
         {
-            //get the initial location
-            var initialLocationTask = _adventureServiceLink.GetInitialLocation(
-                new AdventureRequest() { Id = game.AdventureId },
-                new Credentials() { UserId = game.UserId.ToString() });
-            
-            var initialLocationResponse = await initialLocationTask;
-            //game to get the location id from the response
-            var initialLocation = JsonSerializer.Deserialize<InitialLocation>(
-                initialLocationResponse.Response.Content,
-                new JsonSerializerOptions()
-                {
-                    PropertyNameCaseInsensitive = true
-                });
+            var initialLocationId = await _adventureService.GetInitialLocationId(
+                game.AdventureId, game.UserId);
             
             //if the aggregate already have a destination equal to the location we're setting,
             //don't send the event
             if(aggregateDestinationLocation != null && 
-               aggregateDestinationLocation == initialLocation.Id.ToString())
+               aggregateDestinationLocation == initialLocationId.ToString())
                 return null;
             
             //get the routes for the initial location
-            var routeTask = _adventureServiceLink.GetRoutesForLocation(
-                new AdventureRequest()
-                {
-                    Id = game.AdventureId,
-                    LocationId = initialLocation.Id
-                },
-                new Credentials()
-                {
-                    UserId = game.UserId.ToString()
-                }
-            );
-            var routeResponse = await routeTask;
-            var routes = JsonSerializer.Deserialize<List<Route>>(
-                routeResponse.Response.Content,
-                new JsonSerializerOptions()
-                {
-                    PropertyNameCaseInsensitive = true
-                }
-            );
+            var routeIds = await _adventureService.GetRouteIdsForLocation(
+                game.AdventureId, initialLocationId, game.UserId);
 
             //create and return an enter_location event
             var enterLocationEvent = _eventAdapter.NewEnterLocationEvent(new Location() {
-                Id = initialLocation.Id,
+                Id = initialLocationId,
                 GameId = game.Id
-            }, routes.Select(r => r.Id.ToString()).ToList());
+            }, routeIds.Select(routeId => routeId.ToString()).ToList());
 
             return enterLocationEvent;
         }

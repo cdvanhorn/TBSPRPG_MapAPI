@@ -23,7 +23,7 @@ namespace MapApi.EventProcessors {
         public EnterLocationCheckEventHandler(
             IAggregateService aggregateService,
             ILocationService locationService,
-            IAdventureServiceLink adventureServiceLink) : base(adventureServiceLink)
+            IAdventureService adventureService) : base(adventureService)
         {
             _aggregateService = aggregateService;
             _locationService = locationService;
@@ -37,29 +37,8 @@ namespace MapApi.EventProcessors {
             var loc = _gameAdapter.ToLocationFromCheck(gameAggregate);
             var game = _gameAdapter.ToEntity(gameAggregate);
             if(gameAggregate.Checks.Location) {
-                //get the routes from the adventure
-                // var routesTask = _adventureServiceLink.GetRoutesForLocation(
-                //     new AdventureRequest()
-                //     {
-                //         LocationId = loc.LocationId
-                //     }, new Credentials()
-                //     {
-                //         UserId = game.UserId.ToString()
-                //     });
-                
                 resultEvent = _eventAdapter.NewLocationEnterPassEvent(loc);
                 await _locationService.AddOrUpdateLocation(loc);
-
-                // var routeResponse = await routesTask;
-                // var serviceRoutes = JsonSerializer.Deserialize<List<Route>>(routeResponse.Response.Content);
-                //serviceRoutes = FilterRoutes(serviceRoutes);
-                //send a validate route event that will have a list of routes to check
-
-                //send a validate routes event
-                //the game system api will listen for those events
-                //  and check if the routes are available to the player based on their statistics
-                //the game system api will produce a ValidateRouteCheck event
-                //  which we'll listen for and update the current routes for this game
             } else {
                 resultEvent = _eventAdapter.NewLocationEnterFailEvent(loc);
             }

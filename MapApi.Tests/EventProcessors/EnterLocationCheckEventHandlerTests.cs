@@ -52,10 +52,12 @@ namespace MapApi.Tests.EventProcessors
             var repository = new LocationRepository(context);
             var service = new LocationService(repository);
 
+            var adventureService = new AdventureService(
+                Mocks.MockAdventureServiceLink(_testLocationId, _testRouteId));
+
             return new EnterLocationCheckEventHandler(
                 Mocks.MockAggregateService(events),
-                service,
-                Mocks.MockAdventureServiceLink(_testLocationId, _testRouteId));
+                service, adventureService);
         }
 
         #endregion
