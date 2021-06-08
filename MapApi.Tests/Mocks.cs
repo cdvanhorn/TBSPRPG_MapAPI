@@ -11,7 +11,7 @@ namespace MapApi.Tests
 {
     public static class Mocks
     {
-        public static IAdventureServiceLink MockAdventureServiceLink(Guid testLocationId)
+        public static IAdventureServiceLink MockAdventureServiceLink(Guid testLocationId, Guid testRouteId)
         {
             var adventureServiceLink = new Mock<IAdventureServiceLink>();
             
@@ -33,7 +33,7 @@ namespace MapApi.Tests
             {
                 Response = new RestResponse()
                 {
-                    Content = "[{\"id\": \"" + Guid.NewGuid() + "\"}, {\"id\": \"" + Guid.NewGuid() + "\"}]"
+                    Content = "[{\"id\": \"" + testRouteId + "\"}, {\"id\": \"" + Guid.NewGuid() + "\"}]"
                 }
             });
             return adventureServiceLink.Object;

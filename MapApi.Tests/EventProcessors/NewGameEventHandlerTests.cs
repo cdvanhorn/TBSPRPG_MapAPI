@@ -17,13 +17,12 @@ namespace MapApi.Tests.EventProcessors
     {
         #region Setup
 
-        private Guid _testGameId;
-        private Guid _testLocationId;
+        private readonly Guid _testGameId = Guid.NewGuid();
+        private readonly Guid _testLocationId = Guid.NewGuid();
+        private readonly Guid _testRouteId = Guid.NewGuid();
         
         public NewGameEventHandlerTests() : base("NewGameEventHandlerTests")
         {
-            _testGameId = Guid.NewGuid();
-            _testLocationId = Guid.NewGuid();
             Seed();
         }
         
@@ -33,7 +32,6 @@ namespace MapApi.Tests.EventProcessors
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
 
-            _testGameId = Guid.NewGuid();
             var game = new Game()
             {
                 Id = _testGameId,
@@ -52,7 +50,7 @@ namespace MapApi.Tests.EventProcessors
             return new NewGameEventHandler(
                 service,
                 Mocks.MockAggregateService(events),
-                Mocks.MockAdventureServiceLink(_testLocationId));
+                Mocks.MockAdventureServiceLink(_testLocationId, _testRouteId));
         }
 
         #endregion
@@ -86,6 +84,8 @@ namespace MapApi.Tests.EventProcessors
             Assert.Equal(Event.LOCATION_ENTER_EVENT_TYPE, gameEvent.Type);
             var enterLocation = JsonSerializer.Deserialize<LocationEnter>(gameEvent.GetDataJson());
             Assert.Equal(_testLocationId.ToString(), enterLocation.DestinationLocation);
+            Assert.Equal(2, enterLocation.DestinationRoutes.Count);
+            Assert.Equal(_testRouteId.ToString(), enterLocation.DestinationRoutes[0]);
             Assert.Equal(gameEvent.GetDataId(), enterLocation.Id);
         }
 
@@ -115,6 +115,8 @@ namespace MapApi.Tests.EventProcessors
             Assert.Equal(Event.LOCATION_ENTER_EVENT_TYPE, gameEvent.Type);
             var enterLocation = JsonSerializer.Deserialize<LocationEnter>(gameEvent.GetDataJson());
             Assert.Equal(_testLocationId.ToString(), enterLocation.DestinationLocation);
+            Assert.Equal(2, enterLocation.DestinationRoutes.Count);
+            Assert.Equal(_testRouteId.ToString(), enterLocation.DestinationRoutes[0]);
             Assert.Equal(gameEvent.GetDataId(), enterLocation.Id);
         }
 
