@@ -33,7 +33,12 @@ namespace MapApi.Tests
             {
                 Response = new RestResponse()
                 {
-                    Content = "[{\"id\": \"" + testRouteId + "\"}, {\"id\": \"" + Guid.NewGuid() + "\"}]"
+                    Content = "[{\"id\": \"" + testRouteId + "\"" +
+                              ", \"locationId\": \"" + testLocationId + "\"" +
+                              ", \"name\": \"r1\"}" +
+                              ", {\"id\": \"" + Guid.NewGuid() + "\"" +
+                              ", \"locationId\": \"" + testLocationId + "\"" +
+                              ", \"name\": \"r2\"}]"
                 }
             });
             return adventureServiceLink.Object;

@@ -45,7 +45,7 @@ namespace MapApi.Tests.Services
         #region GetRouteIdsForLocation
 
         [Fact]
-        public async void GetRouteIdsForLocation_ReturnsRoutes()
+        public async void GetRouteIdsForLocation_ReturnsRouteIds()
         {
             //arrange
             var service = CreateService();
@@ -59,6 +59,29 @@ namespace MapApi.Tests.Services
             //assert
             Assert.Equal(2, routes.Count);
             Assert.Equal(_testRouteId, routes[0]);
+        }
+
+        #endregion
+
+        #region GetRoutesForLocation
+
+        [Fact]
+        public async void GetRoutesForLocation_ReturnRoutes()
+        {
+            //arrange
+            var service = CreateService();
+            
+            //act
+            var routes = await service.GetRoutesForLocation(
+                Guid.NewGuid(),
+                _testLocationId,
+                Guid.NewGuid());
+            
+            //assert
+            Assert.Equal(2, routes.Count);
+            Assert.Equal(_testRouteId, routes[0].RouteId);
+            Assert.Equal(_testLocationId, routes[0].LocationId);
+            Assert.Equal("r1", routes[0].Name);
         }
 
         #endregion

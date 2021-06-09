@@ -2,9 +2,9 @@ using MapApi.Entities;
 
 namespace MapApi.Adapters
 {
-    public class AdventureService
+    public static class AdventureServiceAdapter
     {
-        public Route ToRouteEntity(Entities.AdventureService.Route serviceRoute)
+        public static Route ToRouteEntity(Entities.AdventureService.Route serviceRoute)
         {
             return new Route()
             {
