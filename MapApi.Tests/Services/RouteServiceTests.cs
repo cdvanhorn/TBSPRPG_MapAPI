@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using MapApi.Entities;
 using MapApi.Repositories;
 using MapApi.Services;
@@ -47,7 +49,7 @@ namespace MapApi.Tests.Services
             {
                 Id = Guid.NewGuid(),
                 RouteId = Guid.NewGuid(),
-                LocationId = Guid.NewGuid(),
+                LocationId = _testLocationId,
                 Name = "testroute2"
             };
 
@@ -87,6 +89,36 @@ namespace MapApi.Tests.Services
 
             //assert
             Assert.Empty(routes);
+        }
+
+        #endregion
+
+        #region SyncRoutesForGame
+
+        [Fact]
+        public async void SyncRoutesForGame_RoutesAddedAndRemoved()
+        {
+            //arrange
+            await using var context = new MapContext(_dbContextOptions);
+            var service = new RouteService(new RouteRepository(context));
+
+            var keepRoute = context.Routes.FirstOrDefault(route => route.Name == "testroute");
+            var addRoute = new Route()
+            {
+                LocationId = _testLocationId,
+                Name = "added route",
+                RouteId = Guid.NewGuid()
+            };
+            
+            //act
+            await service.SyncRoutesForGame(_testGameId, new List<Route>() {addRoute, keepRoute});
+            
+            //assert
+            context.SaveChanges();
+            Assert.Equal(2, context.Routes.Count());
+            Assert.Equal(2, context.Routes.Count(route => route.LocationId == _testLocationId));
+            Assert.Single(context.Routes.AsQueryable().Where(route => route.Name == "testroute"));
+            Assert.Single(context.Routes.AsQueryable().Where(route => route.Name == "added route"));
         }
 
         #endregion
