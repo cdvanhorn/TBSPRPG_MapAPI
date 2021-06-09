@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using MapApi.Entities;
 using MapApi.Repositories;
 using Xunit;
@@ -84,6 +86,51 @@ namespace MapApi.Tests.Repositories
 
             //assert
             Assert.Empty(routes);
+        }
+        
+        #endregion
+
+        #region RemoveRoutes
+
+        [Fact]
+        public async void RemoveRoutes_RoutesRemoved()
+        {
+            //arrange
+            await using var context = new MapContext(_dbContextOptions);
+            var repository = new RouteRepository(context);
+            var routesToRemove = context.Routes.AsQueryable().Where(route => route.LocationId == _testLocationId);
+
+            //act
+            repository.RemoveRoutes(routesToRemove);
+            
+            //assert
+            context.SaveChanges();
+            Assert.Single(context.Routes);
+        }
+
+        #endregion
+        
+        #region AddRoutes
+
+        [Fact]
+        public async void AddRoutes_RoutesAdded()
+        {
+            //arrange
+            await using var context = new MapContext(_dbContextOptions);
+            var repository = new RouteRepository(context);
+            var route = new Route()
+            {
+                LocationId = _testLocationId,
+                Name = "added route",
+                RouteId = Guid.NewGuid()
+            };
+
+            //act
+            repository.AddRoutes(new List<Route>() { route });
+            
+            //assert
+            context.SaveChanges();
+            Assert.Equal(3, context.Routes.Count());
         }
         
         #endregion
