@@ -15,7 +15,7 @@ namespace MapApi.Tests.Services
         private readonly Guid _testGameId = Guid.NewGuid();
         private readonly Guid _testLocationId = Guid.NewGuid();
 
-        public RouteServiceTests() : base("RouteRepositoryTests")
+        public RouteServiceTests() : base("RouteServiceTests")
         {
             Seed();
         }
@@ -73,7 +73,7 @@ namespace MapApi.Tests.Services
             var routes = await service.GetRoutesForGame(_testGameId);
 
             //assert
-            Assert.Single(routes);
+            Assert.Equal(2, routes.Count());
             Assert.Equal(_testLocationId, routes[0].LocationId);
         }
 

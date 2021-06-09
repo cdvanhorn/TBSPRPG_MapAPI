@@ -1,4 +1,5 @@
 using System;
+using MapApi.Entities;
 using MapApi.Services;
 using Xunit;
 
@@ -79,6 +80,7 @@ namespace MapApi.Tests.Services
             
             //assert
             Assert.Equal(2, routes.Count);
+            Assert.IsType<Route>(routes[0]);
             Assert.Equal(_testRouteId, routes[0].RouteId);
             Assert.Equal(_testLocationId, routes[0].LocationId);
             Assert.Equal("r1", routes[0].Name);

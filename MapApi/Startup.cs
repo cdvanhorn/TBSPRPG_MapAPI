@@ -45,6 +45,8 @@ namespace MapApi
             services.AddScoped<IGameService, GameService>();
             services.AddScoped<IMapRepository, MapRepository>();
             services.AddScoped<IMapService, MapService>();
+            services.AddScoped<IRouteRepository, RouteRepository>();
+            services.AddScoped<IRouteService, RouteService>();
             services.AddScoped<IAdventureService, AdventureService>();
             services.AddScoped<INewGameEventHandler, NewGameEventHandler>();
             services.AddScoped<IEnterLocationCheckEventHandler, EnterLocationCheckEventHandler>();

@@ -8,6 +8,7 @@ using MapApi.Repositories;
 using MapApi.Services;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Events;
+using TbspRpgLib.Events.Location.Content;
 using Xunit;
 
 namespace MapApi.Tests.EventProcessors
@@ -51,13 +52,15 @@ namespace MapApi.Tests.EventProcessors
         {
             var repository = new LocationRepository(context);
             var service = new LocationService(repository);
+            var routeRepository = new RouteRepository(context);
+            var routeService = new RouteService(routeRepository);
 
             var adventureService = new AdventureService(
                 Mocks.MockAdventureServiceLink(_testLocationId, _testRouteId));
 
             return new EnterLocationCheckEventHandler(
                 Mocks.MockAggregateService(events),
-                service, adventureService);
+                service, routeService, adventureService);
         }
 
         #endregion
@@ -95,11 +98,15 @@ namespace MapApi.Tests.EventProcessors
             context.SaveChanges();
             Assert.Single(events);
             Assert.Equal(2, context.Locations.Count());
+            Assert.Equal(2, context.Routes.Count());
             var levent = events.First();
             Assert.Equal(Event.LOCATION_ENTER_PASS_EVENT_TYPE, levent.Type);
-            var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(levent.GetDataJson());
-            Assert.Equal(addedLocationId.ToString(), dict["CurrentLocation"]);
-            Assert.Empty(dict["DestinationLocation"]);
+            var locationEnterPass = JsonSerializer.Deserialize<LocationEnterPass>(levent.GetDataJson());
+            Assert.Equal(addedLocationId.ToString(), locationEnterPass.CurrentLocation);
+            Assert.Equal(2, locationEnterPass.CurrentRoutes.Count);
+            Assert.Equal(_testRouteId.ToString(), locationEnterPass.CurrentRoutes[0]);
+            Assert.Empty(locationEnterPass.DestinationLocation);
+            Assert.Empty(locationEnterPass.DestinationRoutes);
         }
 
         [Fact]
@@ -135,8 +142,9 @@ namespace MapApi.Tests.EventProcessors
             Assert.Single(context.Locations);
             var levent = events.First();
             Assert.Equal(Event.LOCATION_ENTER_FAIL_EVENT_TYPE, levent.Type);
-            var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(levent.GetDataJson());
-            Assert.Empty(dict["DestinationLocation"]);
+            var locationEnterFail = JsonSerializer.Deserialize<LocationEnterFail>(levent.GetDataJson());
+            Assert.Empty(locationEnterFail.DestinationLocation);
+            Assert.Empty(locationEnterFail.DestinationRoutes);
         }
         
         [Fact]
@@ -169,11 +177,12 @@ namespace MapApi.Tests.EventProcessors
             context.SaveChanges();
             Assert.Single(events);
             Assert.Single(context.Locations);
+            Assert.Equal(2, context.Routes.Count());
             var levent = events.First();
             Assert.Equal(Event.LOCATION_ENTER_PASS_EVENT_TYPE, levent.Type);
-            var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(levent.GetDataJson());
-            Assert.Equal(addedLocationId.ToString(), dict["CurrentLocation"]);
-            Assert.Empty(dict["DestinationLocation"]);
+            var locationEnterPass = JsonSerializer.Deserialize<LocationEnterPass>(levent.GetDataJson());
+            Assert.Equal(addedLocationId.ToString(), locationEnterPass.CurrentLocation);
+            Assert.Empty(locationEnterPass.DestinationLocation);
             var location = context.Locations.FirstOrDefault(loc => loc.GameId == _testGameId);
             Assert.NotNull(location);
             Assert.Equal(addedLocationId, location.LocationId);
