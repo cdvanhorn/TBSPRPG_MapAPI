@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using MapApi.Entities;
 using TbspRpgLib.Events;
 using TbspRpgLib.Events.Location;
@@ -5,16 +7,17 @@ using TbspRpgLib.Events.Location.Content;
 
 namespace MapApi.Adapters {
     public interface IEventAdapter {
-        Event NewEnterLocationEvent(Location location);
+        Event NewEnterLocationEvent(Location location, List<string> routes);
         Event NewLocationEnterPassEvent(Location location);
         Event NewLocationEnterFailEvent(Location location);
     }
 
     public class EventAdapter : IEventAdapter {
-        public Event NewEnterLocationEvent(Location location) {
+        public Event NewEnterLocationEvent(Location location, List<string> routes) {
             var enterLocation = new LocationEnter
             {
-                Destination = location.Id.ToString(),
+                DestinationLocation = location.Id.ToString(),
+                DestinationRoutes = routes,
                 Id = location.GameId.ToString()
             };
 
@@ -26,8 +29,10 @@ namespace MapApi.Adapters {
             var content = new LocationEnterPass
             {
                 CurrentLocation = location.LocationId.ToString(),
+                CurrentRoutes = location.Routes.Select(route => route.RouteId.ToString()).ToList(),
                 Id = location.GameId.ToString(),
-                Destination = ""
+                DestinationLocation = "",
+                DestinationRoutes = new List<string>()
             };
 
             return new LocationEnterPassEvent(content);
@@ -37,7 +42,8 @@ namespace MapApi.Adapters {
             var content = new LocationEnterFail
             {
                 Id = location.GameId.ToString(),
-                Destination = ""
+                DestinationLocation = "",
+                DestinationRoutes = new List<string>()
             };
             return new LocationEnterFailEvent(content);
         }

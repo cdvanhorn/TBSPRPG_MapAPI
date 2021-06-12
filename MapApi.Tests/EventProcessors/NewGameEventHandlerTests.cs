@@ -6,13 +6,9 @@ using MapApi.Entities;
 using MapApi.EventProcessors;
 using MapApi.Repositories;
 using MapApi.Services;
-using Moq;
-using RestSharp;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Events;
 using TbspRpgLib.Events.Location.Content;
-using TbspRpgLib.InterServiceCommunication;
-using TbspRpgLib.InterServiceCommunication.RequestModels;
 using Xunit;
 
 namespace MapApi.Tests.EventProcessors
@@ -21,13 +17,12 @@ namespace MapApi.Tests.EventProcessors
     {
         #region Setup
 
-        private Guid _testGameId;
-        private Guid _testLocationId;
+        private readonly Guid _testGameId = Guid.NewGuid();
+        private readonly Guid _testLocationId = Guid.NewGuid();
+        private readonly Guid _testRouteId = Guid.NewGuid();
         
         public NewGameEventHandlerTests() : base("NewGameEventHandlerTests")
         {
-            _testGameId = Guid.NewGuid();
-            _testLocationId = Guid.NewGuid();
             Seed();
         }
         
@@ -37,7 +32,6 @@ namespace MapApi.Tests.EventProcessors
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
 
-            _testGameId = Guid.NewGuid();
             var game = new Game()
             {
                 Id = _testGameId,
@@ -54,30 +48,13 @@ namespace MapApi.Tests.EventProcessors
             var repository = new GameRepository(context);
             var service = new GameService(repository);
             
-            var aggregateService = new Mock<IAggregateService>();
-            aggregateService.Setup(service =>
-                service.AppendToAggregate(It.IsAny<string>(), It.IsAny<Event>(), It.IsAny<ulong>())
-            ).Callback<string, Event, ulong>((type, evnt, n) =>
-            {
-                if (n <= 100)
-                    events.Add(evnt);
-            });
-
-            var adventureServiceLink = new Mock<IAdventureServiceLink>();
-            adventureServiceLink.Setup(asl =>
-                asl.GetInitialLocation(It.IsAny<AdventureRequest>(), It.IsAny<Credentials>())
-            ).ReturnsAsync((AdventureRequest adventureRequest, Credentials creds) => new IscResponse()
-            {
-                Response = new RestResponse()
-                {
-                    Content = "{\"id\": \"" + _testLocationId + "\"}"
-                }
-            });
-
+            var adventureService = new AdventureService(
+                Mocks.MockAdventureServiceLink(_testLocationId, _testRouteId));
+            
             return new NewGameEventHandler(
                 service,
-                aggregateService.Object,
-                adventureServiceLink.Object);
+                Mocks.MockAggregateService(events),
+                adventureService);
         }
 
         #endregion
@@ -110,7 +87,9 @@ namespace MapApi.Tests.EventProcessors
             var gameEvent = events.First();
             Assert.Equal(Event.LOCATION_ENTER_EVENT_TYPE, gameEvent.Type);
             var enterLocation = JsonSerializer.Deserialize<LocationEnter>(gameEvent.GetDataJson());
-            Assert.Equal(_testLocationId.ToString(), enterLocation.Destination);
+            Assert.Equal(_testLocationId.ToString(), enterLocation.DestinationLocation);
+            Assert.Equal(2, enterLocation.DestinationRoutes.Count);
+            Assert.Equal(_testRouteId.ToString(), enterLocation.DestinationRoutes[0]);
             Assert.Equal(gameEvent.GetDataId(), enterLocation.Id);
         }
 
@@ -139,7 +118,9 @@ namespace MapApi.Tests.EventProcessors
             var gameEvent = events.First();
             Assert.Equal(Event.LOCATION_ENTER_EVENT_TYPE, gameEvent.Type);
             var enterLocation = JsonSerializer.Deserialize<LocationEnter>(gameEvent.GetDataJson());
-            Assert.Equal(_testLocationId.ToString(), enterLocation.Destination);
+            Assert.Equal(_testLocationId.ToString(), enterLocation.DestinationLocation);
+            Assert.Equal(2, enterLocation.DestinationRoutes.Count);
+            Assert.Equal(_testRouteId.ToString(), enterLocation.DestinationRoutes[0]);
             Assert.Equal(gameEvent.GetDataId(), enterLocation.Id);
         }
 
@@ -155,7 +136,10 @@ namespace MapApi.Tests.EventProcessors
                 Id = _testGameId.ToString(),
                 AdventureId = Guid.NewGuid().ToString(),
                 UserId = Guid.NewGuid().ToString(),
-                Destination = _testLocationId.ToString(),
+                MapData = new MapData()
+                {
+                    DestinationLocation = _testLocationId.ToString()
+                },
                 GlobalPosition = 10
             };
             

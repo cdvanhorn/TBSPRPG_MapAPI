@@ -1,7 +1,8 @@
 using System.Threading.Tasks;
+using MapApi.Adapters;
+using MapApi.Services;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Events;
-using MapApi.Adapters;
 
 namespace MapApi.EventProcessors {
     public interface IEventHandler {
@@ -11,10 +12,12 @@ namespace MapApi.EventProcessors {
     public class EventHandler {
         protected readonly IGameAggregateAdapter _gameAdapter;
         protected readonly IEventAdapter _eventAdapter;
+        protected readonly IAdventureService _adventureService;
 
-        public EventHandler() {
+        public EventHandler(IAdventureService adventureService) {
             _gameAdapter = new GameAggregateAdapter();
             _eventAdapter = new EventAdapter();
+            _adventureService = adventureService;
         }
     }
 }
