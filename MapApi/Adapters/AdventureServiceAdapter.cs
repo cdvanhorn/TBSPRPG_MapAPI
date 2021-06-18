@@ -10,7 +10,8 @@ namespace MapApi.Adapters
             {
                 RouteId = serviceRoute.Id,
                 LocationId = serviceRoute.LocationId,
-                Name = serviceRoute.Name
+                Name = serviceRoute.Name,
+                Content = serviceRoute.Content
             };
         }
     }
