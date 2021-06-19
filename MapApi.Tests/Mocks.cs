@@ -11,7 +11,7 @@ namespace MapApi.Tests
 {
     public static class Mocks
     {
-        public static IAdventureServiceLink MockAdventureServiceLink(Guid testLocationId, Guid testRouteId)
+        public static IAdventureServiceLink MockAdventureServiceLink(Guid testLocationId, Guid testRouteId, List<Guid> sourceIds)
         {
             var adventureServiceLink = new Mock<IAdventureServiceLink>();
             
@@ -35,13 +35,65 @@ namespace MapApi.Tests
                 {
                     Content = "[{\"id\": \"" + testRouteId + "\"" +
                               ", \"locationId\": \"" + testLocationId + "\"" +
-                              ", \"name\": \"r1\"}" +
+                              ", \"name\": \"r1\""+
+                              ", \"sourceId\": \"" + sourceIds[0] + "\"}" +
                               ", {\"id\": \"" + Guid.NewGuid() + "\"" +
                               ", \"locationId\": \"" + testLocationId + "\"" +
-                              ", \"name\": \"r2\"}]"
+                              ", \"name\": \"r2\"" +
+                              ", \"sourceId\": \"" + sourceIds[1] + "\"}]"
                 }
             });
             return adventureServiceLink.Object;
+        }
+
+        public static IContentServiceLink MockContentServiceLink(List<Guid> sourceIds)
+        {
+            var contentServiceLink = new Mock<IContentServiceLink>();
+            contentServiceLink.Setup(csl =>
+                csl.GetSourceContent(It.IsAny<ContentRequest>(), It.IsAny<Credentials>())
+            ).ReturnsAsync((ContentRequest contentRequest, Credentials creds) =>
+            {
+                if (contentRequest.SourceKey == sourceIds[0])
+                {
+                    return new IscResponse()
+                    {
+                        Response = new RestResponse()
+                        {
+                            Content = "{" +
+                                      "\"Id\": \"" + contentRequest.SourceKey + "\"" +
+                                      ", \"Language\": \"en\"" +
+                                      ", \"Content\": \"source content 0\"" +
+                                      "}"
+                        }
+                    };
+                } 
+                if (contentRequest.SourceKey == sourceIds[1])
+                {
+                    return new IscResponse()
+                    {
+                        Response = new RestResponse()
+                        {
+                            Content = "{" +
+                                      "\"Id\": \"" + contentRequest.SourceKey + "\"" +
+                                      ", \"Language\": \"en\"" +
+                                      ", \"Content\": \"source content 1\"" +
+                                      "}"
+                        }
+                    };
+                }
+                return new IscResponse()
+                {
+                    Response = new RestResponse()
+                    {
+                        Content = "{" +
+                                  "\"Id\": \"" + contentRequest.SourceKey + "\"" +
+                                  ", \"Language\": \"en\"" +
+                                  ", \"Content\": \"invalid source key " + contentRequest.SourceKey + "\"" +
+                                  "}"
+                    }
+                };
+            });
+            return contentServiceLink.Object;
         }
 
         public static IAggregateService MockAggregateService(ICollection<Event> events)

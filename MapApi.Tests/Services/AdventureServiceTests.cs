@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using MapApi.Entities;
 using MapApi.Services;
 using Xunit;
@@ -12,6 +13,12 @@ namespace MapApi.Tests.Services
         private readonly Guid _testLocationId = Guid.NewGuid();
         private readonly Guid _testRouteId = Guid.NewGuid();
 
+        private readonly List<Guid> _sourceKeys = new List<Guid>()
+        {
+            Guid.NewGuid(),
+            Guid.NewGuid()
+        };
+
         public AdventureServiceTests()
         {
             
@@ -20,7 +27,8 @@ namespace MapApi.Tests.Services
         private AdventureService CreateService()
         {
             var adventureService = new AdventureService(
-                Mocks.MockAdventureServiceLink(_testLocationId, _testRouteId));
+                Mocks.MockAdventureServiceLink(_testLocationId, _testRouteId, _sourceKeys),
+                Mocks.MockContentServiceLink(_sourceKeys));
             return adventureService;
         }
 
@@ -53,9 +61,12 @@ namespace MapApi.Tests.Services
             
             //act
             var routes = await service.GetRouteIdsForLocation(
-                Guid.NewGuid(),
-                _testLocationId,
-                Guid.NewGuid());
+                new Game()
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = Guid.NewGuid()
+                },
+                _testLocationId);
             
             //assert
             Assert.Equal(2, routes.Count);
@@ -74,9 +85,12 @@ namespace MapApi.Tests.Services
             
             //act
             var routes = await service.GetRoutesForLocation(
-                Guid.NewGuid(),
-                _testLocationId,
-                Guid.NewGuid());
+                new Game()
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = Guid.NewGuid()
+                },
+                _testLocationId);
             
             //assert
             Assert.Equal(2, routes.Count);
