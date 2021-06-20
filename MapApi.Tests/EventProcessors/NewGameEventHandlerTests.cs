@@ -20,6 +20,11 @@ namespace MapApi.Tests.EventProcessors
         private readonly Guid _testGameId = Guid.NewGuid();
         private readonly Guid _testLocationId = Guid.NewGuid();
         private readonly Guid _testRouteId = Guid.NewGuid();
+        private readonly List<Guid> _sourceKeys = new List<Guid>()
+        {
+            Guid.NewGuid(),
+            Guid.NewGuid()
+        };
         
         public NewGameEventHandlerTests() : base("NewGameEventHandlerTests")
         {
@@ -49,7 +54,8 @@ namespace MapApi.Tests.EventProcessors
             var service = new GameService(repository);
             
             var adventureService = new AdventureService(
-                Mocks.MockAdventureServiceLink(_testLocationId, _testRouteId));
+                Mocks.MockAdventureServiceLink(_testLocationId, _testRouteId, _sourceKeys),
+                Mocks.MockContentServiceLink(_sourceKeys));
             
             return new NewGameEventHandler(
                 service,

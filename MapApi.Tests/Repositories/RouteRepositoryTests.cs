@@ -99,13 +99,14 @@ namespace MapApi.Tests.Repositories
             await using var context = new MapContext(_dbContextOptions);
             var repository = new RouteRepository(context);
             var routesToRemove = context.Routes.AsQueryable().Where(route => route.LocationId == _testLocationId);
-
+            var routeId = routesToRemove.First().Id;
+            
             //act
             repository.RemoveRoutes(routesToRemove);
             
             //assert
             context.SaveChanges();
-            Assert.Single(context.Routes);
+            Assert.Null(context.Routes.AsQueryable().FirstOrDefault(r => r.Id == routeId));
         }
 
         #endregion
