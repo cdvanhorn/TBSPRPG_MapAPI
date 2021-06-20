@@ -47,7 +47,7 @@ namespace MapApi.Services
             return initialLocation.Id;
         }
 
-        private async Task<List<Route>> GetServiceRoutes(Game game, Guid locationId)
+        private async Task<List<Route>> GetServiceRoutes(Game game, Guid locationId, bool includeSource)
         {
             var routeTask = _adventureServiceLink.GetRoutesForLocation(
                 new AdventureRequest()
@@ -83,6 +83,7 @@ namespace MapApi.Services
                         UserId = game.UserId.ToString()
                     }
                 );
+
                 var content = JsonSerializer.Deserialize<Content>(
                     response.Response.Content,
                     new JsonSerializerOptions()
@@ -98,13 +99,13 @@ namespace MapApi.Services
 
         public async Task<List<Guid>> GetRouteIdsForLocation(Game game, Guid locationId)
         {
-            var routes = await GetServiceRoutes(game, locationId);
+            var routes = await GetServiceRoutes(game, locationId, false);
             return routes.Select(r => r.Id).ToList();
         }
 
         public async Task<List<Entities.Route>> GetRoutesForLocation(Game game, Guid locationId)
         {
-            var routes = await GetServiceRoutes(game, locationId);
+            var routes = await GetServiceRoutes(game, locationId, true);
             return routes.Select(AdventureServiceAdapter.ToRouteEntity).ToList();
         }
     }

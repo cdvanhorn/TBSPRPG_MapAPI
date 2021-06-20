@@ -45,6 +45,8 @@ namespace MapApi.EventProcessors {
             //get the routes for the initial location
             var routeIds = await _adventureService.GetRouteIdsForLocation(
                 game, initialLocationId);
+            
+            Console.WriteLine(routeIds);
 
             //create and return an enter_location event
             var enterLocationEvent = _eventAdapter.NewEnterLocationEvent(new Location() {

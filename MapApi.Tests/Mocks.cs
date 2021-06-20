@@ -62,7 +62,7 @@ namespace MapApi.Tests
                             Content = "{" +
                                       "\"Id\": \"" + contentRequest.SourceKey + "\"" +
                                       ", \"Language\": \"en\"" +
-                                      ", \"Content\": \"source content 0\"" +
+                                      ", \"Source\": \"source content 0\"" +
                                       "}"
                         }
                     };
@@ -76,7 +76,7 @@ namespace MapApi.Tests
                             Content = "{" +
                                       "\"Id\": \"" + contentRequest.SourceKey + "\"" +
                                       ", \"Language\": \"en\"" +
-                                      ", \"Content\": \"source content 1\"" +
+                                      ", \"Source\": \"source content 1\"" +
                                       "}"
                         }
                     };
@@ -88,7 +88,7 @@ namespace MapApi.Tests
                         Content = "{" +
                                   "\"Id\": \"" + contentRequest.SourceKey + "\"" +
                                   ", \"Language\": \"en\"" +
-                                  ", \"Content\": \"invalid source key " + contentRequest.SourceKey + "\"" +
+                                  ", \"Source\": \"invalid source key " + contentRequest.SourceKey + "\"" +
                                   "}"
                     }
                 };

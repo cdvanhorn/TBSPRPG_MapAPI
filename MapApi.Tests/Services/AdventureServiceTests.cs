@@ -98,6 +98,7 @@ namespace MapApi.Tests.Services
             Assert.Equal(_testRouteId, routes[0].RouteId);
             Assert.Equal(_testLocationId, routes[0].LocationId);
             Assert.Equal("r1", routes[0].Name);
+            Assert.Equal("source content 0", routes[0].Content);
         }
 
         #endregion
