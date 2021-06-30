@@ -39,7 +39,7 @@ namespace MapApi.Services
             var initialLocationResponse = await initialLocationTask;
             //game to get the location id from the response
             var initialLocation = JsonSerializer.Deserialize<InitialLocation>(
-                initialLocationResponse.Response.Content,
+                initialLocationResponse.Content,
                 new JsonSerializerOptions()
                 {
                     PropertyNameCaseInsensitive = true
@@ -62,7 +62,7 @@ namespace MapApi.Services
             );
             var routeResponse = await routeTask;
             var routes = JsonSerializer.Deserialize<List<Route>>(
-                routeResponse.Response.Content,
+                routeResponse.Content,
                 new JsonSerializerOptions()
                 {
                     PropertyNameCaseInsensitive = true
@@ -84,8 +84,10 @@ namespace MapApi.Services
                     }
                 );
 
+                //TODO if this fails throw an exception so event reprocessed.
+                //have to figure out what a failure looks like
                 var content = JsonSerializer.Deserialize<Content>(
-                    response.Response.Content,
+                    response.Content,
                     new JsonSerializerOptions()
                     {
                         PropertyNameCaseInsensitive = true

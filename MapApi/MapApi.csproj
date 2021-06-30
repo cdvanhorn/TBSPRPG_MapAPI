@@ -14,7 +14,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.1" />
-    <PackageReference Include="TbspRpgLib" Version="1.1.48" />
+    <PackageReference Include="TbspRpgLib" Version="1.1.49" />
   </ItemGroup>
 
 

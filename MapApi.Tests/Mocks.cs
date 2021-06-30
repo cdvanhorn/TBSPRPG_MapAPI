@@ -20,10 +20,7 @@ namespace MapApi.Tests
                 asl.GetInitialLocation(It.IsAny<AdventureRequest>(), It.IsAny<Credentials>())
             ).ReturnsAsync((AdventureRequest adventureRequest, Credentials creds) => new IscResponse()
             {
-                Response = new RestResponse()
-                {
-                    Content = "{\"id\": \"" + testLocationId + "\"}"
-                }
+                Content = "{\"id\": \"" + testLocationId + "\"}"
             });
             
             //get routes
@@ -31,9 +28,7 @@ namespace MapApi.Tests
                 asl.GetRoutesForLocation(It.IsAny<AdventureRequest>(), It.IsAny<Credentials>())
             ).ReturnsAsync((AdventureRequest adventureRequest, Credentials creds) => new IscResponse()
             {
-                Response = new RestResponse()
-                {
-                    Content = "[{\"id\": \"" + testRouteId + "\"" +
+                Content = "[{\"id\": \"" + testRouteId + "\"" +
                               ", \"locationId\": \"" + testLocationId + "\"" +
                               ", \"name\": \"r1\""+
                               ", \"sourceId\": \"" + sourceIds[0] + "\"}" +
@@ -41,7 +36,6 @@ namespace MapApi.Tests
                               ", \"locationId\": \"" + testLocationId + "\"" +
                               ", \"name\": \"r2\"" +
                               ", \"sourceId\": \"" + sourceIds[1] + "\"}]"
-                }
             });
             return adventureServiceLink.Object;
         }
@@ -57,40 +51,31 @@ namespace MapApi.Tests
                 {
                     return new IscResponse()
                     {
-                        Response = new RestResponse()
-                        {
-                            Content = "{" +
-                                      "\"Id\": \"" + contentRequest.SourceKey + "\"" +
-                                      ", \"Language\": \"en\"" +
-                                      ", \"Source\": \"source content 0\"" +
-                                      "}"
-                        }
+                        Content = "{" +
+                                  "\"Id\": \"" + contentRequest.SourceKey + "\"" +
+                                  ", \"Language\": \"en\"" +
+                                  ", \"Source\": \"source content 0\"" +
+                                  "}"
                     };
                 } 
                 if (contentRequest.SourceKey == sourceIds[1])
                 {
                     return new IscResponse()
                     {
-                        Response = new RestResponse()
-                        {
-                            Content = "{" +
-                                      "\"Id\": \"" + contentRequest.SourceKey + "\"" +
-                                      ", \"Language\": \"en\"" +
-                                      ", \"Source\": \"source content 1\"" +
-                                      "}"
-                        }
+                        Content = "{" +
+                                  "\"Id\": \"" + contentRequest.SourceKey + "\"" +
+                                  ", \"Language\": \"en\"" +
+                                  ", \"Source\": \"source content 1\"" +
+                                  "}"
                     };
                 }
                 return new IscResponse()
                 {
-                    Response = new RestResponse()
-                    {
-                        Content = "{" +
-                                  "\"Id\": \"" + contentRequest.SourceKey + "\"" +
-                                  ", \"Language\": \"en\"" +
-                                  ", \"Source\": \"invalid source key " + contentRequest.SourceKey + "\"" +
-                                  "}"
-                    }
+                    Content = "{" +
+                              "\"Id\": \"" + contentRequest.SourceKey + "\"" +
+                              ", \"Language\": \"en\"" +
+                              ", \"Source\": \"invalid source key " + contentRequest.SourceKey + "\"" +
+                              "}"
                 };
             });
             return contentServiceLink.Object;
