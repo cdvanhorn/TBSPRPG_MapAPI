@@ -62,7 +62,8 @@ namespace MapApi.Tests.Controllers
         {
             var repo = new RouteRepository(context);
             var service = new RouteService(repo);
-            return new RoutesController(service);
+            return new RoutesController(service,
+                new GameService(new GameRepository(context)));
         }
 
         #endregion
@@ -98,10 +99,8 @@ namespace MapApi.Tests.Controllers
             var result = await controller.GetByGameId(Guid.NewGuid());
             
             //assert
-            var okObjectResult = result as OkObjectResult;
-            Assert.NotNull(okObjectResult);
-            var routes = okObjectResult.Value as IEnumerable<RouteViewModel>;
-            Assert.Empty(routes);
+            var okResult = result as OkResult;
+            Assert.NotNull(okResult);
         }
 
         #endregion
