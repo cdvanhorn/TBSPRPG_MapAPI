@@ -20,6 +20,7 @@ namespace MapApi.Tests.EventProcessors
         private readonly Guid _testLocationId = Guid.NewGuid();
         private readonly Guid _testGameId = Guid.NewGuid();
         private readonly Guid _testRouteId = Guid.NewGuid();
+        private readonly Guid _errorRouteId = Guid.NewGuid();
         private readonly List<Guid> _sourceKeys = new List<Guid>()
         {
             Guid.NewGuid(),
@@ -61,8 +62,8 @@ namespace MapApi.Tests.EventProcessors
             var routeService = new RouteService(routeRepository);
 
             var adventureService = new AdventureService(
-                Mocks.MockAdventureServiceLink(_testLocationId, _testRouteId, _sourceKeys),
-                Mocks.MockContentServiceLink(_sourceKeys));
+                Mocks.MockAdventureServiceLink(_testLocationId, _testRouteId, _sourceKeys, _errorRouteId),
+                Mocks.MockContentServiceLink(_sourceKeys, _errorRouteId));
 
             return new EnterLocationCheckEventHandler(
                 Mocks.MockAggregateService(events),

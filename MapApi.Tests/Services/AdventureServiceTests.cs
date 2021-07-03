@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MapApi.Entities;
 using MapApi.Services;
 using Xunit;
@@ -12,6 +13,7 @@ namespace MapApi.Tests.Services
 
         private readonly Guid _testLocationId = Guid.NewGuid();
         private readonly Guid _testRouteId = Guid.NewGuid();
+        private readonly Guid _errorRouteId = Guid.NewGuid();
 
         private readonly List<Guid> _sourceKeys = new List<Guid>()
         {
@@ -27,8 +29,8 @@ namespace MapApi.Tests.Services
         private AdventureService CreateService()
         {
             var adventureService = new AdventureService(
-                Mocks.MockAdventureServiceLink(_testLocationId, _testRouteId, _sourceKeys),
-                Mocks.MockContentServiceLink(_sourceKeys));
+                Mocks.MockAdventureServiceLink(_testLocationId, _testRouteId, _sourceKeys, _errorRouteId),
+                Mocks.MockContentServiceLink(_sourceKeys, _errorRouteId));
             return adventureService;
         }
 
@@ -99,6 +101,25 @@ namespace MapApi.Tests.Services
             Assert.Equal(_testLocationId, routes[0].LocationId);
             Assert.Equal("r1", routes[0].Name);
             Assert.Equal("source content 0", routes[0].Content);
+        }
+
+        [Fact]
+        public async void GetRoutesForLocation_ContentServiceFails_ThrowException()
+        {
+            //arrange
+            var service = CreateService();
+            
+            //act
+            Task Act() =>  service.GetRoutesForLocation(
+                new Game()
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = Guid.NewGuid()
+                },
+                _errorRouteId
+            );
+
+            var exception = Assert.ThrowsAsync<Exception>(Act);
         }
 
         #endregion

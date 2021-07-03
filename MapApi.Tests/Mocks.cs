@@ -11,7 +11,7 @@ namespace MapApi.Tests
 {
     public static class Mocks
     {
-        public static IAdventureServiceLink MockAdventureServiceLink(Guid testLocationId, Guid testRouteId, List<Guid> sourceIds)
+        public static IAdventureServiceLink MockAdventureServiceLink(Guid testLocationId, Guid testRouteId, List<Guid> sourceIds, Guid errorSourceId)
         {
             var adventureServiceLink = new Mock<IAdventureServiceLink>();
             
@@ -26,21 +26,34 @@ namespace MapApi.Tests
             //get routes
             adventureServiceLink.Setup(asl =>
                 asl.GetRoutesForLocation(It.IsAny<AdventureRequest>(), It.IsAny<Credentials>())
-            ).ReturnsAsync((AdventureRequest adventureRequest, Credentials creds) => new IscResponse()
+            ).ReturnsAsync((AdventureRequest adventureRequest, Credentials creds) =>
             {
-                Content = "[{\"id\": \"" + testRouteId + "\"" +
+                if (adventureRequest.LocationId == errorSourceId)
+                {
+                    return new IscResponse()
+                    {
+                        Content = "[{\"id\": \"" + testRouteId + "\"" +
+                                  ", \"locationId\": \"" + adventureRequest.LocationId + "\"" +
+                                  ", \"name\": \"r1\"" +
+                                  ", \"sourceId\": \"" + errorSourceId + "\"}]"
+                    };
+                }
+                return new IscResponse()
+                {
+                    Content = "[{\"id\": \"" + testRouteId + "\"" +
                               ", \"locationId\": \"" + testLocationId + "\"" +
-                              ", \"name\": \"r1\""+
+                              ", \"name\": \"r1\"" +
                               ", \"sourceId\": \"" + sourceIds[0] + "\"}" +
                               ", {\"id\": \"" + Guid.NewGuid() + "\"" +
                               ", \"locationId\": \"" + testLocationId + "\"" +
                               ", \"name\": \"r2\"" +
                               ", \"sourceId\": \"" + sourceIds[1] + "\"}]"
+                };
             });
             return adventureServiceLink.Object;
         }
 
-        public static IContentServiceLink MockContentServiceLink(List<Guid> sourceIds)
+        public static IContentServiceLink MockContentServiceLink(List<Guid> sourceIds, Guid errorSourceId)
         {
             var contentServiceLink = new Mock<IContentServiceLink>();
             contentServiceLink.Setup(csl =>
@@ -51,6 +64,7 @@ namespace MapApi.Tests
                 {
                     return new IscResponse()
                     {
+                        IsSuccessful = true,
                         Content = "{" +
                                   "\"Id\": \"" + contentRequest.SourceKey + "\"" +
                                   ", \"Language\": \"en\"" +
@@ -62,11 +76,20 @@ namespace MapApi.Tests
                 {
                     return new IscResponse()
                     {
+                        IsSuccessful = true,
                         Content = "{" +
                                   "\"Id\": \"" + contentRequest.SourceKey + "\"" +
                                   ", \"Language\": \"en\"" +
                                   ", \"Source\": \"source content 1\"" +
                                   "}"
+                    };
+                }
+                if (contentRequest.SourceKey == errorSourceId)
+                {
+                    return new IscResponse()
+                    {
+                        IsSuccessful = false,
+                        ErrorMessage = "content api error"
                     };
                 }
                 return new IscResponse()

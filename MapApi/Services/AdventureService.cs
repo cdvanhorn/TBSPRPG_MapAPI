@@ -68,6 +68,8 @@ namespace MapApi.Services
                     PropertyNameCaseInsensitive = true
                 }
             );
+
+            if (!includeSource) return routes;
             
             //get the content for each route
             foreach (var route in routes)
@@ -84,7 +86,10 @@ namespace MapApi.Services
                     }
                 );
 
-                //TODO if this fails throw an exception so event reprocessed.
+                if (!response.IsSuccessful)
+                {
+                    throw new Exception(response.ErrorMessage);
+                }
                 //have to figure out what a failure looks like
                 var content = JsonSerializer.Deserialize<Content>(
                     response.Content,
@@ -95,7 +100,7 @@ namespace MapApi.Services
                 );
                 route.Content = content.Source;
             }
-            
+
             return routes;
         }
 
